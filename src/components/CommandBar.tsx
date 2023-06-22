@@ -91,7 +91,11 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 		}
 	});
 
-	const isMobile = window.innerWidth <= 768;
+	let isMobile = false;
+
+	if (typeof window !== "undefined") {
+		isMobile = window.innerWidth <= 768;
+	}
 
 	const looperRef = React.useRef();
 	const effectsRef = React.useRef();
