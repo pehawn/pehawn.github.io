@@ -21,8 +21,6 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 	const [showHomePage, setShowHomePage] = React.useState<boolean>(true);
 	const [showSwatchesList, setShowSwatchesList] = React.useState<boolean>(false);
 
-	const isMobile = window.innerWidth <= 768;
-
 	const whiteTheme = createTheme({
 		palette: {
 			primary: {
