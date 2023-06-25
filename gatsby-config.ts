@@ -41,7 +41,7 @@ const config: GatsbyConfig = {
 		{
 			resolve: "gatsby-plugin-manifest",
 			options: {
-				icon: "src/images/3d.png"
+				icon: "src/images/audiocable.png"
 			}
 		}
 	]
