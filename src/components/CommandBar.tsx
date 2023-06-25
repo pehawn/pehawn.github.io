@@ -119,21 +119,59 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const [isPaused, setIsPaused] = React.useState<boolean>(false);
 
 	const loadLoop = async (): Promise<void> => {
-		appContext.Player.current.unsync();
 		Tone.Transport.cancel();
 
-		appContext.Player.current = new Tone.Player();
+		if (appContext.SelectedAudio.Stems.length > 0) {
+			appContext.SelectedAudio.Stems.forEach((stem) => {
+				appContext.Player.current.player(stem.Name).unsync();
+				appContext.Player.current.player(stem.Name).dispose();
+			});
 
-		await appContext.Player.current.load(appContext.SelectedAudio.Path);
+			const initialURLs = appContext.SelectedAudio.Stems.reduce((acc, stem) => {
+				const name: string = stem["Name"];
+				acc[name] = stem["Path"];
+				return acc;
+			}, {});
 
-		appContext.Player.current.reverse = appContext.SelectedAudio.Reversed;
-		appContext.Player.current.playbackRate = appContext.TempoLevel;
+			appContext.Player.current = new Tone.Players({
+				urls: initialURLs,
+				onload: async () => {
+					await Promise.all(
+						appContext.SelectedAudio.Stems.map(async (stem) => {
+							const stemMuted: boolean = stem.Channel.muted;
+							const tempChannel = new Tone.Channel().toDestination();
+							stem.Channel = tempChannel;
+							appContext.Player.current.player(stem.Name).connect(tempChannel);
+							appContext.Player.current.player(stem.Name).reverse = appContext.SelectedAudio.Reversed;
+							appContext.Player.current.player(stem.Name).playbackRate = appContext.TempoLevel;
+							appContext.Player.current.player(stem.Name).volume.value = stem.Volume;
+							appContext.Player.current.player(stem.Name).mute = stemMuted;
+							appContext.Player.current.player(stem.Name).sync();
+							appContext.Player.current.player(stem.Name).start(0);
+						})
+					);
 
-		appContext.Player.current.toDestination().sync().start(0);
+					Tone.Transport.loop = true;
+					Tone.Transport.loopStart = startLoopTime;
+					Tone.Transport.loopEnd = endLoopTime;
+					Tone.Transport.start();
+				}
+			}).toDestination();
+		} else {
+			appContext.Player.current.unsync();
+			appContext.Player.current = new Tone.Player();
 
-		Tone.Transport.loop = true;
-		Tone.Transport.seconds = startLoopTime;
-		Tone.Transport.start();
+			await appContext.Player.current.load(appContext.SelectedAudio.Path);
+
+			appContext.Player.current.reverse = appContext.SelectedAudio.Reversed;
+			appContext.Player.current.playbackRate = appContext.TempoLevel;
+			appContext.Player.current.toDestination().sync().start(0);
+
+			Tone.Transport.loop = true;
+			Tone.Transport.loopStart = startLoopTime;
+			Tone.Transport.loopEnd = endLoopTime;
+			Tone.Transport.start();
+		}
 	};
 
 	const cancelLoop = (): void => {
@@ -731,11 +769,16 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 									backgroundColor: "transparent"
 								}}
 								onClick={() => {
+									let audio: IAudio = { ...appContext.SelectedAudio };
+
 									if (!appContext.Player.current.player(stem.Name).mute) {
+										audio.Stems[currentStemIndex].Channel.mute = true;
 										appContext.Player.current.player(stem.Name).mute = true;
 									} else {
+										audio.Stems[currentStemIndex].Channel.mute = false;
 										appContext.Player.current.player(stem.Name).mute = false;
 									}
+									appContext.SetSelectedAudio(audio);
 								}}
 							>
 								{renderStemVolumeButton(stem)}
