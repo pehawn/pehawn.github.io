@@ -101,6 +101,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const effectsRef = React.useRef();
 	const playerControlsRef = React.useRef();
 	const stemsRef = React.useRef();
+	const profileRef = React.useRef();
+	const downloadsRef = React.useRef();
 
 	const [recordTheme, setRecordTheme] = React.useState<any>(darkGreyTheme);
 	const [recordingTooltip, setRecordingTooltip] = React.useState<string>("Say Hello");
@@ -117,6 +119,10 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const [showPlayerControlsDialog, setShowPlayerControlsDialog] = React.useState<boolean>(false);
 	const [playerControlsAnchorEl, setPlayerControlsAnchorEl] = React.useState();
 	const [isPaused, setIsPaused] = React.useState<boolean>(false);
+	const [showProfileDialog, setShowProfileDialog] = React.useState<boolean>(false);
+	const [profileAnchorEl, setProfileAnchorEl] = React.useState();
+	const [showDownloadsDialog, setShowDownloadsDialog] = React.useState<boolean>(false);
+	const [downloadsAnchorEl, setDownloadsAnchorEl] = React.useState();
 
 	const loadLoop = async (): Promise<void> => {
 		Tone.Transport.cancel();
@@ -290,6 +296,103 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 		appContext.SetSelectedAudio(tempAudio);
 	};
 
+	const renderProfileDialog = (): JSX.Element => {
+		return (
+			<Popover
+				open={showProfileDialog}
+				anchorEl={profileAnchorEl}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "center"
+				}}
+				transformOrigin={{
+					vertical: "top",
+					horizontal: "left"
+				}}
+			>
+				<div
+					style={{
+						position: "relative",
+						padding: "1em 1em .5em 1em",
+						verticalAlign: "center"
+					}}
+				>
+					<div
+						style={{
+							position: "absolute",
+							top: "0",
+							right: "0"
+						}}
+					>
+						<IconButton color={"primary"} size="small">
+							<CloseIcon
+								fontSize="inherit"
+								onClick={() => {
+									setShowProfileDialog(false);
+								}}
+							></CloseIcon>
+						</IconButton>
+					</div>
+				</div>
+				<div style={{ padding: "1em" }}>
+					<ProfileDownloadsTinyText>Patrick Hawn / KCMO</ProfileDownloadsTinyText>
+				</div>
+			</Popover>
+		);
+	};
+
+	const renderDownloadsDialog = (): JSX.Element => {
+		return (
+			<Popover
+				open={showDownloadsDialog}
+				anchorEl={downloadsAnchorEl}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "center"
+				}}
+				transformOrigin={{
+					vertical: "top",
+					horizontal: "left"
+				}}
+			>
+				<div
+					style={{
+						position: "relative",
+						padding: "1em 1em .5em 1em",
+						verticalAlign: "center"
+					}}
+				>
+					<div
+						style={{
+							position: "absolute",
+							top: "0",
+							right: "0"
+						}}
+					>
+						<IconButton color={"primary"} size="small">
+							<CloseIcon
+								fontSize="inherit"
+								onClick={() => {
+									setShowDownloadsDialog(false);
+								}}
+							></CloseIcon>
+						</IconButton>
+					</div>
+				</div>
+				<Grid container spacing={0} padding={0} alignItems={"center"}>
+					<Grid item sx={{ paddingRight: "8px" }}>
+						<IconButton color={"primary"} href={appContext.Downloads[0]} download>
+							<FileDownloadIcon></FileDownloadIcon>
+						</IconButton>
+					</Grid>
+					<Grid item sx={{ paddingRight: "8px" }}>
+						<ProfileDownloadsTinyText>Some Beats</ProfileDownloadsTinyText>
+					</Grid>
+				</Grid>
+			</Popover>
+		);
+	};
+
 	const renderLooperDialog = (): JSX.Element => {
 		return (
 			<Popover
@@ -400,6 +503,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 					vertical: "top",
 					horizontal: "right"
 				}}
+				sx={{ overflow: "hidden" }}
 			>
 				<div
 					style={{
@@ -884,6 +988,13 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 		letterSpacing: 0.2
 	});
 
+	const ProfileDownloadsTinyText = styled(Typography)({
+		fontSize: ".8rem",
+		opacity: 0.7,
+		fontWeight: 500,
+		letterSpacing: 0.2
+	});
+
 	const theme = useTheme();
 
 	const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
@@ -1139,18 +1250,42 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						paddingLeft: ".6em"
 					}}
 				>
-					<ThemeProvider theme={darkGreyTheme}>
-						<LightTooltip TransitionComponent={Zoom} title="About" placement="right">
-							<IconButton color={"primary"}>
+					<span ref={profileRef}>
+						<ThemeProvider theme={darkGreyTheme}>
+							{/* <LightTooltip TransitionComponent={Zoom} title="About" placement="right"> */}
+							<IconButton
+								color={"primary"}
+								style={{
+									backgroundColor: "transparent"
+								}}
+								onClick={() => {
+									setShowProfileDialog(true);
+									setProfileAnchorEl(profileRef.current);
+								}}
+							>
 								<PersonIcon></PersonIcon>
 							</IconButton>
-						</LightTooltip>
-					</ThemeProvider>
-					<ThemeProvider theme={darkGreyTheme}>
-						<IconButton color={"primary"}>
-							<FolderOpenIcon></FolderOpenIcon>
-						</IconButton>
-					</ThemeProvider>
+							{/* </LightTooltip> */}
+							{renderProfileDialog()}
+						</ThemeProvider>
+					</span>
+					<span ref={downloadsRef}>
+						<ThemeProvider theme={darkGreyTheme}>
+							<IconButton
+								color={"primary"}
+								style={{
+									backgroundColor: "transparent"
+								}}
+								onClick={() => {
+									setShowDownloadsDialog(true);
+									setDownloadsAnchorEl(downloadsRef.current);
+								}}
+							>
+								<FolderOpenIcon></FolderOpenIcon>
+							</IconButton>
+							{renderDownloadsDialog()}
+						</ThemeProvider>
+					</span>
 				</div>
 				{renderPlayerInfo()}
 				<div
