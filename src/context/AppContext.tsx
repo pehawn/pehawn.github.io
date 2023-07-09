@@ -11,6 +11,7 @@ export interface IAppContextProps {
 
 export interface IAppContext {
 	Tracks: IAudio[];
+	Downloads: string[];
 	Swatches: ISwatch[];
 	SelectedSwatch: ISwatch;
 	UpdateSwatch: boolean;
@@ -70,6 +71,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	const [playerTimestamp, setPlayerTimestamp] = React.useState<number>(null);
 
 	const [tracks, setTracks] = React.useState<IAudio[]>([]);
+	const [downloads, setDownloads] = React.useState<string[]>([]);
 
 	const playerRef = React.useRef(null);
 	const recorderRef = React.useRef(null);
@@ -77,38 +79,44 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	const setData = async (): Promise<void> => {
 		if (props.graphQlData.allMdx.nodes) {
 			let foundTracks: IAudio[] = [];
+			let foundDownloads: string[] = [];
 
 			for (const data of props.graphQlData.allMdx.nodes) {
-				const audio = data.frontmatter.audio.filter((t) => !t.publicURL.includes("Stems"))[0];
-				let albumArt = getImage(data.frontmatter.featuredImage?.childImageSharp?.gatsbyImageData);
-				let cardColor: string = null;
+				if (data.frontmatter.audio.filter((t) => t.dir.includes("downloads")).length > 0) {
+					foundDownloads.push(data.frontmatter.audio[0].publicURL);
+				} else {
+					const audio = data.frontmatter.audio.filter((t) => !t.publicURL.includes("Stems"))[0];
+					let albumArt = getImage(data.frontmatter.featuredImage?.childImageSharp?.gatsbyImageData);
+					let cardColor: string = null;
 
-				if (albumArt) {
-					console.log(data.frontmatter?.albumArtColor);
-					cardColor = data.frontmatter?.albumArtColor;
+					if (albumArt) {
+						console.log(data.frontmatter?.albumArtColor);
+						cardColor = data.frontmatter?.albumArtColor;
+					}
+
+					let foundAudio: IAudio = {
+						Name: audio.name,
+						FullName: data.frontmatter.title,
+						Path: audio.publicURL,
+						AlbumArt: albumArt,
+						CardColor: cardColor,
+						Stems: []
+					};
+
+					for (const stem of data.frontmatter.audio.filter((t) => t.relativeDirectory.includes("Stems"))) {
+						foundAudio.Stems.push({
+							Name: stem.name,
+							Path: stem.publicURL,
+							Volume: 0
+						});
+					}
+
+					foundTracks.push(foundAudio);
 				}
-
-				let foundAudio: IAudio = {
-					Name: audio.name,
-					FullName: data.frontmatter.title,
-					Path: audio.publicURL,
-					AlbumArt: albumArt,
-					CardColor: cardColor,
-					Stems: []
-				};
-
-				for (const stem of data.frontmatter.audio.filter((t) => t.relativeDirectory.includes("Stems"))) {
-					foundAudio.Stems.push({
-						Name: stem.name,
-						Path: stem.publicURL,
-						Volume: 0
-					});
-				}
-
-				foundTracks.push(foundAudio);
 			}
 
 			setTracks(foundTracks);
+			setDownloads(foundDownloads);
 		}
 	};
 
@@ -388,6 +396,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 	const contextObject: IAppContext = {
 		Tracks: tracks,
+		Downloads: downloads,
 		Swatches: swatches,
 		SelectedSwatch: selectedSwatch,
 		UpdateSwatch: updateSwatch,

@@ -19,6 +19,13 @@ const config: GatsbyConfig = {
 				path: `${__dirname}/songs`
 			}
 		},
+		{
+			resolve: "gatsby-source-filesystem",
+			options: {
+				name: `downloads`,
+				path: `${__dirname}/downloads`
+			}
+		},
 		"gatsby-plugin-mdx",
 		"gatsby-transformer-sharp",
 		{

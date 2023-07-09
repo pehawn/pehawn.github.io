@@ -55,7 +55,8 @@ const CardList: React.FunctionComponent<any> = ({}): JSX.Element => {
 						<PlayArrowIcon
 							sx={{
 								color: audio.CardColor ? audio.CardColor : "#bbbbbb",
-								boxShadow: "0px 2px 2px #DBD9D9"
+								boxShadow: "0px 2px 2px #DBD9D9",
+								borderRadius: "3px"
 							}}
 						></PlayArrowIcon>
 					</Button>
@@ -80,7 +81,8 @@ const CardList: React.FunctionComponent<any> = ({}): JSX.Element => {
 						<RestartAltIcon
 							sx={{
 								color: audio.CardColor ? audio.CardColor : "#bbbbbb",
-								boxShadow: "0px 2px 2px #DBD9D9"
+								boxShadow: "0px 2px 2px #DBD9D9",
+								borderRadius: "3px"
 							}}
 						></RestartAltIcon>
 					</Button>
@@ -104,6 +106,7 @@ const CardList: React.FunctionComponent<any> = ({}): JSX.Element => {
 						<CasinoIcon
 							sx={{
 								color: audio.CardColor ? audio.CardColor : "#bbbbbb",
+								borderRadius: "3px",
 								boxShadow: "0px 2px 2px #DBD9D9"
 							}}
 						></CasinoIcon>
