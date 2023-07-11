@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Button, ClickAwayListener, Grid, IconButton, Popover, Slider, Stack, Tooltip, Typography, Zoom } from "@mui/material";
+import { Box, Button, ClickAwayListener, Grid, IconButton, Link, Popover, Slider, Stack, Tooltip, Typography, Zoom } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -39,6 +39,8 @@ import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import { IStem } from "../types/IStem";
 import { IAudio } from "../types/IAudio";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import InstagramIcon from "@mui/icons-material/Instagram";
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 	<Tooltip
@@ -324,7 +326,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							right: "0"
 						}}
 					>
-						<IconButton color={"primary"} size="small">
+						<IconButton style={{ backgroundColor: "transparent" }} color={"primary"} size="small">
 							<CloseIcon
 								fontSize="inherit"
 								onClick={() => {
@@ -334,9 +336,15 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						</IconButton>
 					</div>
 				</div>
-				<div style={{ padding: "1em" }}>
-					<ProfileDownloadsTinyText>Patrick Hawn / KCMO</ProfileDownloadsTinyText>
-				</div>
+				<Stack direction={"row"} alignItems={"center"} style={{ padding: "1em" }}>
+					<ProfileDownloadsTinyText>Patrick Hawn / KCMO </ProfileDownloadsTinyText>
+					<IconButton style={{ paddingLeft: "10px", backgroundColor: "transparent" }} target="_blank" href="https://www.linkedin.com/in/patrick-hawn-74717381/" size="small">
+						<LinkedInIcon color="info" fontSize="inherit"></LinkedInIcon>
+					</IconButton>
+					<IconButton style={{ backgroundColor: "transparent" }} target="_blank" href="https://www.instagram.com" size="small">
+						<InstagramIcon color="info" fontSize="inherit"></InstagramIcon>
+					</IconButton>
+				</Stack>
 			</Popover>
 		);
 	};
@@ -369,7 +377,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							right: "0"
 						}}
 					>
-						<IconButton color={"primary"} size="small">
+						<IconButton style={{ backgroundColor: "transparent" }} color={"primary"} size="small">
 							<CloseIcon
 								fontSize="inherit"
 								onClick={() => {
@@ -381,7 +389,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 				</div>
 				<Grid container spacing={0} padding={0} alignItems={"center"}>
 					<Grid item sx={{ paddingRight: "8px" }}>
-						<IconButton color={"primary"} href={appContext.Downloads[0]} download>
+						<IconButton style={{ backgroundColor: "transparent" }} color={"primary"} href={appContext.Downloads[0]} download>
 							<FileDownloadIcon></FileDownloadIcon>
 						</IconButton>
 					</Grid>
@@ -447,7 +455,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							right: "0"
 						}}
 					>
-						<IconButton color={"primary"}>
+						<IconButton color={"primary"} style={{ backgroundColor: "transparent" }}>
 							<CloseIcon
 								onClick={() => {
 									setShowLooperDialog(false);
@@ -526,7 +534,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 								}}
 							></ReplayIcon>
 						</IconButton>
-						<IconButton color={"primary"}>
+						<IconButton color={"primary"} style={{ backgroundColor: "transparent" }}>
 							<CloseIcon
 								onClick={() => {
 									setShowEffectsDialog(false);
