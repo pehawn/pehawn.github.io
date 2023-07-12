@@ -204,11 +204,11 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			}, {});
 
 			let duration: number = 0;
-			playerRef.current = new Tone.Players({
+			playerRef.current = await new Tone.Players({
 				urls: initialURLs,
 				onload: async () => {
 					await Promise.all(
-						audio.Stems.map(async (stem) => {
+						audio.Stems.map((stem) => {
 							const stemLength: number = playerRef.current.player(stem.Name).buffer.duration;
 							if (stemLength > duration) {
 								duration = stemLength;
@@ -238,6 +238,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 					audio.Bpm = Tone.Transport.bpm.value;
 
 					setSelectedAudio(audio);
+
+					Tone.Transport.start();
+					Tone.Transport.seconds = 0;
 				}
 			}).toDestination();
 		} else {
@@ -262,6 +265,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 			audio.CurrentTimestampEventId = currentTimestampEventId;
 			setSelectedAudio(audio);
+
+			Tone.Transport.start();
+			Tone.Transport.seconds = 0;
 		}
 
 		if (randomizeEffects) {
@@ -274,9 +280,6 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		Tone.Destination.connect(recorder);
 
 		setPlayerTimestamp(0);
-
-		Tone.Transport.start();
-		Tone.Transport.seconds = 0;
 
 		setEffectsChain(randomizeEffects);
 	};
