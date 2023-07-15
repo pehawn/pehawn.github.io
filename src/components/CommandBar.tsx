@@ -1036,107 +1036,152 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	};
 
 	const renderPlayerInfo = (): JSX.Element => {
+		if (!isMobile && appContext.Player.current && !appContext.Player.current.loaded) {
+			return (
+				<div
+					style={{
+						position: "absolute",
+						left: "50%",
+						top: "0",
+						transform: "translateX(-50%)",
+						marginTop: "17px"
+					}}
+				>
+					<CircularProgress
+						variant="indeterminate"
+						disableShrink
+						sx={{
+							color: (theme) => darkGreyTheme.palette.primary.main,
+							animationDuration: "550ms",
+							position: "absolute",
+							left: 0,
+							[`& .${circularProgressClasses.circle}`]: {
+								strokeLinecap: "round"
+							}
+						}}
+						size={30}
+						thickness={2}
+					/>
+				</div>
+			);
+		}
+
 		if (!isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") {
-			if (appContext.Player.current.loaded) {
-				return (
-					<React.Fragment>
-						<div
-							style={{
-								position: "absolute",
-								left: "50%",
-								top: "0",
-								transform: "translateX(-50%)",
-								marginTop: "10px"
-							}}
-						>
-							<Stack spacing={1.5} direction="row">
-								<span ref={stemsRef}>
-									<ThemeProvider theme={darkGreyTheme}>
-										<IconButton
-											color={"primary"}
-											style={{
-												backgroundColor: "transparent"
-											}}
-											disabled={appContext.SelectedAudio.Stems.length === 0}
-											onClick={() => {
-												setShowStemsDialog(true);
-												setStemsAnchorEl(stemsRef.current);
-											}}
-										>
-											<SettingsInputCompositeIcon></SettingsInputCompositeIcon>
-										</IconButton>
-										{renderStemsDialog()}
-									</ThemeProvider>
-								</span>
-								<div>
-									<TinyText sx={{ textAlign: "center", letterSpacing: 10 }}>{appContext.SelectedAudio.Name}</TinyText>
-									<Slider
-										aria-label="time-indicator"
-										size="small"
-										value={appContext.PlayerTimestamp}
-										min={0}
-										step={1}
-										max={appContext.SelectedAudio.Duration}
-										sx={{
-											color: theme.palette.mode === "dark" ? "#fff" : "#9a9a9a",
-											height: 4,
-											padding: "6px 0px",
-											width: "250px",
-											"@media (pointer: coarse)": {
-												padding: "5px"
-											},
-											"& .MuiSlider-thumb": {
-												width: 8,
-												height: 8,
-												transition: "0.3s cubic-bezier(.47,1.64,.41,.8)",
-												"&:before": {
-													boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)"
-												},
-												"&:hover, &.Mui-focusVisible": {
-													boxShadow: `0px 0px 0px 8px ${theme.palette.mode === "dark" ? "rgb(255 255 255 / 16%)" : "rgb(0 0 0 / 16%)"}`
-												},
-												"&.Mui-active": {
-													width: 20,
-													height: 20
-												}
-											},
-											"& .MuiSlider-rail": {
-												opacity: 0.28
-											}
-										}}
-									/>
-									{renderTimingInfo()}
-								</div>
-								<span ref={playerControlsRef}>
-									<ThemeProvider theme={darkGreyTheme}>
-										<IconButton
-											color={"primary"}
-											style={{
-												backgroundColor: "transparent"
-											}}
-											onClick={() => {
-												setShowPlayerControlsDialog(true);
-												setPlayerControlsAnchorEl(playerControlsRef.current);
-											}}
-										>
-											<RadioIcon></RadioIcon>
-										</IconButton>
-										{renderPlayerControlsDialog()}
-									</ThemeProvider>
-								</span>
-							</Stack>
-						</div>
-					</React.Fragment>
-				);
-			} else {
-				return (
+			return (
+				<React.Fragment>
 					<div
 						style={{
 							position: "absolute",
 							left: "50%",
 							top: "0",
 							transform: "translateX(-50%)",
-							marginTop: "17px"
+							marginTop: "10px"
+						}}
+					>
+						<Stack spacing={1.5} direction="row">
+							<span ref={stemsRef}>
+								<ThemeProvider theme={darkGreyTheme}>
+									<IconButton
+										color={"primary"}
+										style={{
+											backgroundColor: "transparent"
+										}}
+										disabled={appContext.SelectedAudio.Stems.length === 0}
+										onClick={() => {
+											setShowStemsDialog(true);
+											setStemsAnchorEl(stemsRef.current);
+										}}
+									>
+										<SettingsInputCompositeIcon></SettingsInputCompositeIcon>
+									</IconButton>
+									{renderStemsDialog()}
+								</ThemeProvider>
+							</span>
+							<div>
+								<TinyText sx={{ textAlign: "center", letterSpacing: 10 }}>{appContext.SelectedAudio.Name}</TinyText>
+								<Slider
+									aria-label="time-indicator"
+									size="small"
+									value={appContext.PlayerTimestamp}
+									min={0}
+									step={1}
+									max={appContext.SelectedAudio.Duration}
+									sx={{
+										color: theme.palette.mode === "dark" ? "#fff" : "#9a9a9a",
+										height: 4,
+										padding: "6px 0px",
+										width: "250px",
+										"@media (pointer: coarse)": {
+											padding: "5px"
+										},
+										"& .MuiSlider-thumb": {
+											width: 8,
+											height: 8,
+											transition: "0.3s cubic-bezier(.47,1.64,.41,.8)",
+											"&:before": {
+												boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)"
+											},
+											"&:hover, &.Mui-focusVisible": {
+												boxShadow: `0px 0px 0px 8px ${theme.palette.mode === "dark" ? "rgb(255 255 255 / 16%)" : "rgb(0 0 0 / 16%)"}`
+											},
+											"&.Mui-active": {
+												width: 20,
+												height: 20
+											}
+										},
+										"& .MuiSlider-rail": {
+											opacity: 0.28
+										}
+									}}
+								/>
+								{renderTimingInfo()}
+							</div>
+							<span ref={playerControlsRef}>
+								<ThemeProvider theme={darkGreyTheme}>
+									<IconButton
+										color={"primary"}
+										style={{
+											backgroundColor: "transparent"
+										}}
+										onClick={() => {
+											setShowPlayerControlsDialog(true);
+											setPlayerControlsAnchorEl(playerControlsRef.current);
+										}}
+									>
+										<RadioIcon></RadioIcon>
+									</IconButton>
+									{renderPlayerControlsDialog()}
+								</ThemeProvider>
+							</span>
+						</Stack>
+					</div>
+				</React.Fragment>
+			);
+		}
+	};
+
+	const renderMobilePlayerInfo = (): JSX.Element => {
+		if (isMobile && appContext.Player.current && !appContext.Player.current.loaded) {
+			return (
+				<div
+					style={{
+						height: "2.5em",
+						top: "4em",
+						position: "sticky",
+						padding: "1em",
+						verticalAlign: "center",
+						boxShadow: "0px .5px 5px 0.1px #9a9a9a",
+						backgroundColor: "#eeeeee",
+						zIndex: 100
+					}}
+				>
+					<div
+						style={{
+							position: "absolute",
+							left: "50%",
+							top: "0",
+							transform: "translateX(-50%)",
+							marginTop: "20px"
 						}}
 					>
 						<CircularProgress
@@ -1152,158 +1197,115 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 								}
 							}}
 							size={30}
-							thickness={4}
+							thickness={2}
 						/>
 					</div>
-				);
-			}
+				</div>
+			);
 		}
-	};
 
-	const renderMobilePlayerInfo = (): JSX.Element => {
 		if (isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") {
-			if (appContext.Player.current.loaded) {
-				return (
+			return (
+				<div
+					style={{
+						height: "2.5em",
+						top: "4em",
+						position: "sticky",
+						padding: "1em",
+						verticalAlign: "center",
+						boxShadow: "0px .5px 5px 0.1px #9a9a9a",
+						backgroundColor: "#eeeeee",
+						zIndex: 100
+					}}
+				>
 					<div
 						style={{
-							height: "2.5em",
-							top: "4em",
-							position: "sticky",
-							padding: "1em",
-							verticalAlign: "center",
-							boxShadow: "0px .5px 5px 0.1px #9a9a9a",
-							backgroundColor: "#eeeeee"
+							position: "absolute",
+							left: "50%",
+							top: "0",
+							transform: "translateX(-50%)",
+							marginTop: "10px"
 						}}
 					>
-						<div
-							style={{
-								position: "absolute",
-								left: "50%",
-								top: "0",
-								transform: "translateX(-50%)",
-								marginTop: "10px"
-							}}
-						>
-							<Stack spacing={1.5} direction="row">
-								<span ref={stemsRef}>
-									<ThemeProvider theme={darkGreyTheme}>
-										<IconButton
-											color={"primary"}
-											style={{
-												backgroundColor: "transparent"
-											}}
-											disabled={appContext.SelectedAudio.Stems.length === 0}
-											onMouseOver={() => {
-												setShowStemsDialog(true);
-												setStemsAnchorEl(stemsRef.current);
-											}}
-										>
-											<SettingsInputCompositeIcon></SettingsInputCompositeIcon>
-										</IconButton>
-										{renderStemsDialog()}
-									</ThemeProvider>
-								</span>
-								<div>
-									<TinyText sx={{ textAlign: "center", letterSpacing: 10 }}>{appContext.SelectedAudio.Name}</TinyText>
-									<Slider
-										aria-label="time-indicator"
-										size="small"
-										value={appContext.PlayerTimestamp}
-										min={0}
-										step={1}
-										max={appContext.SelectedAudio.Duration}
-										//onChangeCommitted={(_, value) => (appContext.Player.current.seek = value as number)}
-										sx={{
-											color: theme.palette.mode === "dark" ? "#fff" : "#9a9a9a",
-											height: 4,
-											width: "250px",
-											"@media (pointer: coarse)": {
-												padding: "0px"
-											},
-											"& .MuiSlider-thumb": {
-												width: 8,
-												height: 8,
-												transition: "0.3s cubic-bezier(.47,1.64,.41,.8)",
-												"&:before": {
-													boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)"
-												},
-												"&:hover, &.Mui-focusVisible": {
-													boxShadow: `0px 0px 0px 8px ${theme.palette.mode === "dark" ? "rgb(255 255 255 / 16%)" : "rgb(0 0 0 / 16%)"}`
-												},
-												"&.Mui-active": {
-													width: 20,
-													height: 20
-												}
-											},
-											"& .MuiSlider-rail": {
-												opacity: 0.28
-											}
+						<Stack spacing={1.5} direction="row">
+							<span ref={stemsRef}>
+								<ThemeProvider theme={darkGreyTheme}>
+									<IconButton
+										color={"primary"}
+										style={{
+											backgroundColor: "transparent"
 										}}
-									/>
-									{renderTimingInfo()}
-								</div>
-								<span ref={playerControlsRef}>
-									<ThemeProvider theme={darkGreyTheme}>
-										<IconButton
-											color={"primary"}
-											style={{
-												backgroundColor: "transparent"
-											}}
-											onMouseOver={() => {
-												setShowPlayerControlsDialog(true);
-												setPlayerControlsAnchorEl(playerControlsRef.current);
-											}}
-										>
-											<RadioIcon></RadioIcon>
-										</IconButton>
-										{renderPlayerControlsDialog()}
-									</ThemeProvider>
-								</span>
-							</Stack>
-						</div>
+										disabled={appContext.SelectedAudio.Stems.length === 0}
+										onMouseOver={() => {
+											setShowStemsDialog(true);
+											setStemsAnchorEl(stemsRef.current);
+										}}
+									>
+										<SettingsInputCompositeIcon></SettingsInputCompositeIcon>
+									</IconButton>
+									{renderStemsDialog()}
+								</ThemeProvider>
+							</span>
+							<div>
+								<TinyText sx={{ textAlign: "center", letterSpacing: 10 }}>{appContext.SelectedAudio.Name}</TinyText>
+								<Slider
+									aria-label="time-indicator"
+									size="small"
+									value={appContext.PlayerTimestamp}
+									min={0}
+									step={1}
+									max={appContext.SelectedAudio.Duration}
+									//onChangeCommitted={(_, value) => (appContext.Player.current.seek = value as number)}
+									sx={{
+										color: theme.palette.mode === "dark" ? "#fff" : "#9a9a9a",
+										height: 4,
+										width: "250px",
+										"@media (pointer: coarse)": {
+											padding: "0px"
+										},
+										"& .MuiSlider-thumb": {
+											width: 8,
+											height: 8,
+											transition: "0.3s cubic-bezier(.47,1.64,.41,.8)",
+											"&:before": {
+												boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)"
+											},
+											"&:hover, &.Mui-focusVisible": {
+												boxShadow: `0px 0px 0px 8px ${theme.palette.mode === "dark" ? "rgb(255 255 255 / 16%)" : "rgb(0 0 0 / 16%)"}`
+											},
+											"&.Mui-active": {
+												width: 20,
+												height: 20
+											}
+										},
+										"& .MuiSlider-rail": {
+											opacity: 0.28
+										}
+									}}
+								/>
+								{renderTimingInfo()}
+							</div>
+							<span ref={playerControlsRef}>
+								<ThemeProvider theme={darkGreyTheme}>
+									<IconButton
+										color={"primary"}
+										style={{
+											backgroundColor: "transparent"
+										}}
+										onMouseOver={() => {
+											setShowPlayerControlsDialog(true);
+											setPlayerControlsAnchorEl(playerControlsRef.current);
+										}}
+									>
+										<RadioIcon></RadioIcon>
+									</IconButton>
+									{renderPlayerControlsDialog()}
+								</ThemeProvider>
+							</span>
+						</Stack>
 					</div>
-				);
-			} else {
-				return (
-					<div
-						style={{
-							height: "2.5em",
-							top: "4em",
-							position: "sticky",
-							padding: "1em",
-							verticalAlign: "center",
-							boxShadow: "0px .5px 5px 0.1px #9a9a9a",
-							backgroundColor: "#eeeeee"
-						}}
-					>
-						<div
-							style={{
-								position: "absolute",
-								left: "50%",
-								top: "0",
-								transform: "translateX(-50%)",
-								marginTop: "20px"
-							}}
-						>
-							<CircularProgress
-								variant="indeterminate"
-								disableShrink
-								sx={{
-									color: (theme) => darkGreyTheme.palette.primary.main,
-									animationDuration: "550ms",
-									position: "absolute",
-									left: 0,
-									[`& .${circularProgressClasses.circle}`]: {
-										strokeLinecap: "round"
-									}
-								}}
-								size={30}
-								thickness={4}
-							/>
-						</div>
-					</div>
-				);
-			}
+				</div>
+			);
 		}
 	};
 
@@ -1317,7 +1319,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 					padding: "1em",
 					verticalAlign: "center",
 					boxShadow: "0px .5px 5px 0.1px #9a9a9a",
-					backgroundColor: "#eeeeee"
+					backgroundColor: "#eeeeee",
+					zIndex: 100
 				}}
 			>
 				<div
