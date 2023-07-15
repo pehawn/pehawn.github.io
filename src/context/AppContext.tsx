@@ -195,6 +195,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		}
 
 		const tempoValue: number = randomizeEffects ? Math.random() * (1.4 - 0.6 + 1) + 0.6 : tempoLevel;
+		let startTime: number = 0;
 
 		if (audio.Stems.length > 0) {
 			const initialURLs = audio.Stems.reduce((acc, stem) => {
@@ -221,26 +222,22 @@ export const AppContextProvider = (props: IAppContextProps) => {
 							playerRef.current.player(stem.Name).sync();
 							playerRef.current.player(stem.Name).start();
 						})
-					);
+					).then(() => {
+						audio.Duration = duration / tempoValue;
+						const currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
+							() => {
+								setPlayerTimestamp(startTime++);
+							},
+							1,
+							0,
+							audio.Duration
+						);
 
-					audio.Duration = duration / tempoValue;
+						audio.CurrentTimestampEventId = currentTimestampEventId;
+						audio.Bpm = Tone.Transport.bpm.value;
 
-					const currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
-						() => {
-							setPlayerTimestamp(Tone.TransportTime().toSeconds());
-						},
-						1,
-						0,
-						audio.Duration
-					);
-
-					audio.CurrentTimestampEventId = currentTimestampEventId;
-					audio.Bpm = Tone.Transport.bpm.value;
-
-					setSelectedAudio(audio);
-
-					Tone.Transport.start();
-					Tone.Transport.seconds = 0;
+						setSelectedAudio(audio);
+					});
 				}
 			}).toDestination();
 		} else {
@@ -256,7 +253,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 			const currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
 				() => {
-					setPlayerTimestamp(Tone.TransportTime().toSeconds());
+					setPlayerTimestamp(startTime++);
 				},
 				1,
 				0,
@@ -265,9 +262,6 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 			audio.CurrentTimestampEventId = currentTimestampEventId;
 			setSelectedAudio(audio);
-
-			Tone.Transport.start();
-			Tone.Transport.seconds = 0;
 		}
 
 		if (randomizeEffects) {
@@ -280,6 +274,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		Tone.Destination.connect(recorder);
 
 		setPlayerTimestamp(0);
+
+		Tone.Transport.start();
+		Tone.Transport.seconds = 0;
 
 		setEffectsChain(randomizeEffects);
 	};
