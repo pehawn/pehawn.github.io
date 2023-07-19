@@ -89,10 +89,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 					let albumArt = getImage(data.frontmatter.featuredImage?.childImageSharp?.gatsbyImageData);
 					let cardColor: string = null;
 
-					if (albumArt) {
-						console.log(data.frontmatter?.albumArtColor);
-						cardColor = data.frontmatter?.albumArtColor;
-					}
+					cardColor = data.frontmatter?.albumArtColor;
 
 					let foundAudio: IAudio = {
 						Name: audio.name,

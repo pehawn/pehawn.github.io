@@ -11,7 +11,11 @@ import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import "@fontsource-variable/cinzel";
 import { HexToHSL } from "./colorPicker/Helpers";
 
-const CardList: React.FunctionComponent<any> = ({}): JSX.Element => {
+interface ICardList {
+	setScrollHeight(scrollHeight: number): void;
+}
+
+const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 	const appContext = React.useContext(AppContext);
 
 	const theme = useTheme();
@@ -181,24 +185,35 @@ const CardList: React.FunctionComponent<any> = ({}): JSX.Element => {
 		}
 	};
 
+	const getScrollHeight = (): JSX.Element => {
+		const pixelScrollHeight: number = document.getElementById("cardList")?.scrollHeight;
+		const vhScrollHeight: number = (100 * pixelScrollHeight) / window.innerHeight;
+		props.setScrollHeight(vhScrollHeight);
+
+		return <React.Fragment></React.Fragment>;
+	};
+
 	return (
-		<div style={{ backgroundColor: "#eeeeee", flexGrow: 1, padding: theme.spacing(2) }}>
-			<Grid container spacing={2} direction="row" columns={{ xs: 1, sm: 4, md: 8 }}>
-				{appContext.Tracks.map((track: IAudio) => (
-					<Grid item key={track.Name} xs={1} sm={2} md={2}>
-						<Card sx={{ display: "flex", height: "110px" }}>
-							<Divider orientation="vertical" sx={{ borderWidth: "5px", backgroundColor: track.CardColor ? track.CardColor : "#bbbbbb" }}></Divider>
-							<TinyText style={{ justifyContent: "center", writingMode: "vertical-lr", rotate: "180deg", display: "flex", alignItems: "left" }}>{track.Name}</TinyText>
-							{renderSwatches(track.CardColor)}
-							<Box sx={{ justifyContent: "center", display: "flex", flex: "2", flexDirection: "column", alignItems: "center" }}>
-								<Box sx={{ display: "flex", alignItems: "center" }}>{renderAudio(track)}</Box>
-							</Box>
-							{renderAlbumArt(track)}
-						</Card>
-					</Grid>
-				))}
-			</Grid>
-		</div>
+		<React.Fragment>
+			<div id="cardList" style={{ backgroundColor: "#eeeeee", flexGrow: 1, padding: theme.spacing(2) }}>
+				<Grid container spacing={2} direction="row" columns={{ xs: 1, sm: 4, md: 8 }}>
+					{appContext.Tracks.map((track: IAudio) => (
+						<Grid item key={track.Name} xs={1} sm={2} md={2}>
+							<Card sx={{ display: "flex", height: "110px" }}>
+								<Divider orientation="vertical" sx={{ borderWidth: "5px", backgroundColor: track.CardColor ? track.CardColor : "#bbbbbb" }}></Divider>
+								<TinyText style={{ justifyContent: "center", writingMode: "vertical-lr", rotate: "180deg", display: "flex", alignItems: "left" }}>{track.Name}</TinyText>
+								{renderSwatches(track.CardColor)}
+								<Box sx={{ justifyContent: "center", display: "flex", flex: "2", flexDirection: "column", alignItems: "center" }}>
+									<Box sx={{ display: "flex", alignItems: "center" }}>{renderAudio(track)}</Box>
+								</Box>
+								{renderAlbumArt(track)}
+							</Card>
+						</Grid>
+					))}
+				</Grid>
+			</div>
+			{getScrollHeight()}
+		</React.Fragment>
 	);
 };
 

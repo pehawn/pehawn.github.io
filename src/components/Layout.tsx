@@ -20,6 +20,7 @@ import CardList from "./CardList";
 const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 	const [showHomePage, setShowHomePage] = React.useState<boolean>(true);
 	const [showSwatchesList, setShowSwatchesList] = React.useState<boolean>(false);
+	const [scrollHeight, setScrollHeight] = React.useState<number>(100);
 
 	const whiteTheme = createTheme({
 		palette: {
@@ -31,6 +32,30 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 			}
 		}
 	});
+
+	// const data = useStaticQuery(graphql`
+	// 	{
+	// 		allMdx {
+	// 			nodes {
+	// 				frontmatter {
+	// 					title
+	// 					audio {
+	// 						name
+	// 						dir
+	// 						publicURL
+	// 						relativeDirectory
+	// 					}
+	// 					featuredImage {
+	// 						childImageSharp {
+	// 							gatsbyImageData(height: 800)
+	// 						}
+	// 					}
+	// 					albumArtColor
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// `);
 
 	const data = useStaticQuery(graphql`
 		{
@@ -44,11 +69,6 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 							publicURL
 							relativeDirectory
 						}
-						featuredImage {
-							childImageSharp {
-								gatsbyImageData(height: 800)
-							}
-						}
 						albumArtColor
 					}
 				}
@@ -58,11 +78,13 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 
 	const renderSwatchesList = (): JSX.Element => {
 		if (showSwatchesList) {
+			let totalHeight: string = scrollHeight + "vh";
+
 			return (
-				<div style={{ height: "100vh" }}>
+				<div style={{ height: totalHeight }}>
 					{children}
 					<CommandBar />
-					<CardList />
+					<CardList setScrollHeight={setScrollHeight} />
 				</div>
 			);
 		}
