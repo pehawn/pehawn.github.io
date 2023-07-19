@@ -394,7 +394,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						</IconButton>
 					</Grid>
 					<Grid item sx={{ paddingRight: "8px" }}>
-						<ProfileDownloadsTinyText>Some Beats</ProfileDownloadsTinyText>
+						<ProfileDownloadsTinyText>Beat Tape 1</ProfileDownloadsTinyText>
 					</Grid>
 				</Grid>
 			</Popover>

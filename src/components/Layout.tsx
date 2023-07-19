@@ -78,7 +78,7 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 
 	const renderSwatchesList = (): JSX.Element => {
 		if (showSwatchesList) {
-			let totalHeight: string = scrollHeight + "vh";
+			let totalHeight: string = scrollHeight + "svh";
 
 			return (
 				<div style={{ height: totalHeight }}>
