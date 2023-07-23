@@ -16,4 +16,5 @@ export interface IAudio {
 	IsHover?: boolean;
 	AlbumArt?: any;
 	CardColor?: string;
+	Order?: number;
 }
