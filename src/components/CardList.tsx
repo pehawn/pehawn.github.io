@@ -163,12 +163,12 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 		const baseColor: string = cardColor ? cardColor : "#bbbbbb";
 		const hslValues: number[] = HexToHSL(baseColor);
 		let swatches: JSX.Element[] = [];
-		const hueFactor: number = 5;
+		const hueFactor: number = 2;
 		const saturationFactor: number = hslValues[1] / 10;
 		const lightnessFactor: number = hslValues[2] / 75;
 
 		for (let i = 0; i < 5; i++) {
-			const backgroundColor: string = ("hsl(" + (hslValues[0] - i * hueFactor) + ", " + (hslValues[1] + (Math.pow(i, 2) - 4) * saturationFactor) + "%, " + (hslValues[2] + (Math.pow(i, 2) - 4) * lightnessFactor) + "%)") as string;
+			const backgroundColor: string = ("hsl(" + (hslValues[0] + i * 4 * hueFactor) + ", " + (hslValues[1] + (Math.pow(i, 2) - 4) * saturationFactor) + "%, " + (hslValues[2] + (Math.pow(i, 2) - 4) * lightnessFactor) + "%)") as string;
 			swatches.push(<div style={{ backgroundColor: backgroundColor, height: "30px" }} />);
 		}
 

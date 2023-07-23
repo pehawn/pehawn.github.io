@@ -70,6 +70,7 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 							relativeDirectory
 						}
 						albumArtColor
+						order
 					}
 				}
 			}

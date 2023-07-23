@@ -97,7 +97,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 						Path: audio.publicURL,
 						AlbumArt: albumArt,
 						CardColor: cardColor,
-						Stems: []
+						Stems: [],
+						Order: data.frontmatter.order
 					};
 
 					for (const stem of data.frontmatter.audio.filter((t) => t.relativeDirectory.includes("Stems"))) {
@@ -111,6 +112,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 					foundTracks.push(foundAudio);
 				}
 			}
+
+			// Sort tracks based on album color in ascending order
+			foundTracks.sort((a, b) => a.Order - b.Order);
 
 			setTracks(foundTracks);
 			setDownloads(foundDownloads);
