@@ -39,6 +39,7 @@ const SignaturePlayButton: React.FunctionComponent<any> = ({}): JSX.Element => {
 						backgroundColor: "transparent",
 						opacity: 0.7
 					}}
+					disabled={!Tone.loaded}
 					onClick={() => {
 						if (appContext.SelectedAudio) {
 							Tone.Transport.start();
