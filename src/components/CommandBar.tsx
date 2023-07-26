@@ -508,14 +508,15 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 					vertical: "top",
 					horizontal: "right"
 				}}
-				sx={{ overflow: "hidden" }}
+				sx={{ overflowX: "hidden", overflowY: "hidden" }}
 			>
 				<div
 					style={{
 						position: "relative",
 						padding: "1em",
 						verticalAlign: "center",
-						overflow: "hidden"
+						overflowX: "hidden",
+						overflowY: "hidden"
 					}}
 				>
 					<div
