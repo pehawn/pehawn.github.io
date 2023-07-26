@@ -251,31 +251,31 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	};
 
 	const updateScheduleTimingEvent = (event: Event, value: number): void => {
-		if (appContext.SelectedAudio.Stems.length > 0) {
-		} else {
-			const updatedDuration: number = (appContext.TempoLevel / value) * appContext.SelectedAudio.Duration;
-			const timestampRatio: number = appContext.PlayerTimestamp / appContext.SelectedAudio.Duration;
-			let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
+		// if (appContext.SelectedAudio.Stems.length > 0) {
+		// } else {
+		const updatedDuration: number = (appContext.TempoLevel / value) * appContext.SelectedAudio.Duration;
+		const timestampRatio: number = appContext.PlayerTimestamp / appContext.SelectedAudio.Duration;
+		let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
 
-			Tone.Transport.clear(appContext.SelectedAudio.CurrentTimestampEventId);
-			Tone.Transport.seconds = updatedTimestamp;
+		Tone.Transport.clear(appContext.SelectedAudio.CurrentTimestampEventId);
+		Tone.Transport.seconds = updatedTimestamp;
 
-			let currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
-				() => {
-					appContext.SetPlayerTimestamp(Tone.TransportTime().toSeconds());
-				},
-				1,
-				updatedTimestamp,
-				updatedDuration - updatedTimestamp
-			);
+		let currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
+			() => {
+				appContext.SetPlayerTimestamp(Tone.TransportTime().toSeconds());
+			},
+			1,
+			updatedTimestamp,
+			updatedDuration - updatedTimestamp
+		);
 
-			const tempAudio: IAudio = { ...appContext.SelectedAudio };
-			tempAudio.CurrentTimestampEventId = currentTimestampEventId;
-			tempAudio.Duration = updatedDuration;
-			appContext.SetTempoLevel(value);
-			appContext.SetPlayerTimestamp(updatedTimestamp);
-			appContext.SetSelectedAudio(tempAudio);
-		}
+		const tempAudio: IAudio = { ...appContext.SelectedAudio };
+		tempAudio.CurrentTimestampEventId = currentTimestampEventId;
+		tempAudio.Duration = updatedDuration;
+		appContext.SetTempoLevel(value);
+		appContext.SetPlayerTimestamp(updatedTimestamp);
+		appContext.SetSelectedAudio(tempAudio);
+		// }
 	};
 
 	const jumpToPosition = (seconds: number): void => {
@@ -783,8 +783,26 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							color={"primary"}
 							onClick={() => {
 								Tone.Transport.stop();
+								if (appContext.SelectedAudio.CurrentTimestampEventId) {
+									Tone.Transport.clear(appContext.SelectedAudio.CurrentTimestampEventId);
+								}
+
+								if (Tone.Transport.state === "paused") {
+									Tone.Transport.start();
+								}
+
+								if (appContext.SelectedAudio.Stems.length > 0) {
+									appContext.SelectedAudio.Stems.forEach((stem) => {
+										appContext.Player.current.player(stem.Name).unsync();
+										appContext.Player.current.player(stem.Name).dispose();
+									});
+								} else {
+									appContext.Player.current.unsync();
+									appContext.Player.current.dispose();
+								}
 								setShowPlayerControlsDialog(false);
 								setPlayerControlsAnchorEl(null);
+								appContext.SetSelectedAudio(null);
 							}}
 						>
 							<StopRoundedIcon></StopRoundedIcon>
