@@ -508,15 +508,17 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 					vertical: "top",
 					horizontal: "right"
 				}}
-				sx={{ overflowX: "hidden", overflowY: "hidden" }}
+				sx={{
+					"& .MuiPaper-root": {
+						overflowY: "hidden"
+					}
+				}}
 			>
 				<div
 					style={{
 						position: "relative",
 						padding: "1em",
-						verticalAlign: "center",
-						overflowX: "hidden",
-						overflowY: "hidden"
+						verticalAlign: "center"
 					}}
 				>
 					<div
