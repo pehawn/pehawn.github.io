@@ -173,7 +173,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 			swatches.push(<div style={{ backgroundColor: backgroundColor, height: "30px" }} />);
 		}
 
-		return <Stack style={{ width: "-webkit-fill-available" }}>{swatches}</Stack>;
+		return <Stack style={{ width: "100%" }}>{swatches}</Stack>;
 	};
 
 	const renderAlbumArt = (track: IAudio): JSX.Element => {

@@ -251,8 +251,6 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	};
 
 	const updateScheduleTimingEvent = (event: Event, value: number): void => {
-		// if (appContext.SelectedAudio.Stems.length > 0) {
-		// } else {
 		const updatedDuration: number = (appContext.TempoLevel / value) * appContext.SelectedAudio.Duration;
 		const timestampRatio: number = appContext.PlayerTimestamp / appContext.SelectedAudio.Duration;
 		let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
@@ -275,7 +273,6 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 		appContext.SetTempoLevel(value);
 		appContext.SetPlayerTimestamp(updatedTimestamp);
 		appContext.SetSelectedAudio(tempAudio);
-		// }
 	};
 
 	const jumpToPosition = (seconds: number): void => {
@@ -470,8 +467,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							variant="contained"
 							disabled={!startLoopEnabled || Tone.Transport.state !== "started"}
 							onClick={() => {
-								Tone.Transport.loopStart = Tone.Transport.seconds;
-								setStartLoopTime(Tone.Transport.loopStart);
+								Tone.Transport.loopStart = appContext.PlayerTimestamp;
+								setStartLoopTime(appContext.PlayerTimestamp);
 								setStartLoopEnabled(false);
 							}}
 							style={{ minWidth: "6em" }}
@@ -484,8 +481,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							variant="contained"
 							disabled={!endLoopEnabled || Tone.Transport.state !== "started"}
 							onClick={() => {
-								Tone.Transport.loopEnd = Tone.Transport.seconds;
-								setEndLoopTime(Tone.Transport.loopEnd);
+								Tone.Transport.loopEnd = appContext.PlayerTimestamp;
+								setEndLoopTime(appContext.PlayerTimestamp);
 								setEndLoopEnabled(false);
 							}}
 							style={{ minWidth: "6em" }}
@@ -517,7 +514,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 					style={{
 						position: "relative",
 						padding: "1em",
-						verticalAlign: "center"
+						verticalAlign: "center",
+						overflow: "hidden"
 					}}
 				>
 					<div
