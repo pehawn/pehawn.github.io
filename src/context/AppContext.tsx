@@ -152,9 +152,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			setTremoloLevel(tremoloValue);
 			setVibratoLevel(vibratoValue);
 			setChorusLevel(chorusValue);
+			setDistortionLevel(distValue);
 		}
 
-		setDistortionLevel(distValue);
 		setDistortionEffect(tempDistortion);
 		setPitchEffect(tempPitch);
 		setTremoloEffect(tempTremelo);
