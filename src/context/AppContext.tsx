@@ -148,13 +148,13 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		tempChorus.wet.value = chorusValue / 100;
 
 		if (randomizeEffects) {
-			setDistortionLevel(distValue);
 			setPitchLevel(pitchValue);
 			setTremoloLevel(tremoloValue);
 			setVibratoLevel(vibratoValue);
 			setChorusLevel(chorusValue);
 		}
 
+		setDistortionLevel(distValue);
 		setDistortionEffect(tempDistortion);
 		setPitchEffect(tempPitch);
 		setTremoloEffect(tempTremelo);
