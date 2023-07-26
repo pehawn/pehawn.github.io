@@ -10,6 +10,7 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import "@fontsource-variable/cinzel";
 import { HexToHSL } from "./colorPicker/Helpers";
+import * as Tone from "tone";
 
 interface ICardList {
 	setScrollHeight(scrollHeight: number): void;
@@ -58,7 +59,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 					>
 						<PlayArrowIcon
 							sx={{
-								color: audio.CardColor ? audio.CardColor : "#bbbbbb",
+								color: appContext.SelectedAudio && appContext.SelectedAudio.Name === audio.Name && audio.CardColor ? audio.CardColor : "#bbbbbb",
 								boxShadow: "0px 2px 2px #DBD9D9",
 								borderRadius: "3px"
 							}}
@@ -84,7 +85,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 					>
 						<RestartAltIcon
 							sx={{
-								color: audio.CardColor ? audio.CardColor : "#bbbbbb",
+								color: appContext.SelectedAudio && appContext.SelectedAudio.Name === audio.Name && audio.CardColor ? audio.CardColor : "#bbbbbb",
 								boxShadow: "0px 2px 2px #DBD9D9",
 								borderRadius: "3px"
 							}}
@@ -109,7 +110,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 					>
 						<CasinoIcon
 							sx={{
-								color: audio.CardColor ? audio.CardColor : "#bbbbbb",
+								color: appContext.SelectedAudio && appContext.SelectedAudio.Name === audio.Name && audio.CardColor ? audio.CardColor : "#bbbbbb",
 								borderRadius: "3px",
 								boxShadow: "0px 2px 2px #DBD9D9"
 							}}
@@ -159,8 +160,8 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 		}
 	};
 
-	const renderSwatches = (cardColor: string): JSX.Element => {
-		const baseColor: string = cardColor ? cardColor : "#bbbbbb";
+	const renderSwatches = (track: IAudio): JSX.Element => {
+		const baseColor: string = appContext.SelectedAudio && appContext.SelectedAudio.Name === track.Name && track.CardColor ? track.CardColor : "#bbbbbb";
 		const hslValues: number[] = HexToHSL(baseColor);
 		let swatches: JSX.Element[] = [];
 		const hueFactor: number = 2;
@@ -200,9 +201,9 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 					{appContext.Tracks.map((track: IAudio) => (
 						<Grid item key={track.Name} xs={1} sm={2} md={2}>
 							<Card sx={{ display: "flex", height: "110px" }}>
-								<Divider orientation="vertical" sx={{ borderWidth: "5px", backgroundColor: track.CardColor ? track.CardColor : "#bbbbbb" }}></Divider>
+								<Divider orientation="vertical" sx={{ borderWidth: "5px", backgroundColor: appContext.SelectedAudio && appContext.SelectedAudio.Name === track.Name && track.CardColor ? track.CardColor : "#bbbbbb" }}></Divider>
 								<TinyText style={{ justifyContent: "center", writingMode: "vertical-lr", rotate: "180deg", display: "flex", alignItems: "left" }}>{track.Name}</TinyText>
-								{renderSwatches(track.CardColor)}
+								{renderSwatches(track)}
 								<Box sx={{ justifyContent: "center", display: "flex", flex: "2", flexDirection: "column", alignItems: "center" }}>
 									<Box sx={{ display: "flex", alignItems: "center" }}>{renderAudio(track)}</Box>
 								</Box>

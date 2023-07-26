@@ -166,7 +166,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 	const updateSelectedAudio = async (audio: IAudio, randomizeEffects: boolean): Promise<void> => {
 		if (Tone.Transport.state === "started" || Tone.Transport.state === "paused" || (Tone.Transport.state === "stopped" && playerRef.current)) {
-			if (selectedAudio.CurrentTimestampEventId) {
+			if (selectedAudio && selectedAudio.CurrentTimestampEventId) {
 				Tone.Transport.clear(selectedAudio.CurrentTimestampEventId);
 			}
 
@@ -174,14 +174,16 @@ export const AppContextProvider = (props: IAppContextProps) => {
 				Tone.Transport.start();
 			}
 
-			if (selectedAudio.Stems.length > 0) {
-				selectedAudio.Stems.forEach((stem) => {
-					playerRef.current.player(stem.Name).unsync();
-					playerRef.current.player(stem.Name).dispose();
-				});
-			} else {
-				playerRef.current.unsync();
-				playerRef.current.dispose();
+			if (selectedAudio) {
+				if (selectedAudio.Stems.length > 0) {
+					selectedAudio.Stems.forEach((stem) => {
+						playerRef.current.player(stem.Name).unsync();
+						playerRef.current.player(stem.Name).dispose();
+					});
+				} else {
+					playerRef.current.unsync();
+					playerRef.current.dispose();
+				}
 			}
 
 			distortionEffect.dispose();
