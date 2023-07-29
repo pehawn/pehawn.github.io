@@ -196,7 +196,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 
 	return (
 		<React.Fragment>
-			<div id="cardList" style={{ backgroundColor: "#eeeeee", flexGrow: 1, padding: theme.spacing(2) }}>
+			<div id="cardList" style={{ flexGrow: 1, padding: theme.spacing(2) }}>
 				<Grid container spacing={2} direction="row" columns={{ xs: 1, sm: 4, md: 8 }}>
 					{appContext.Tracks.map((track: IAudio) => (
 						<Grid item key={track.Name} xs={1} sm={2} md={2}>

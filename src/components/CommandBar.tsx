@@ -804,6 +804,10 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 								setShowPlayerControlsDialog(false);
 								setPlayerControlsAnchorEl(null);
 								appContext.SetSelectedAudio(null);
+
+								// Reset page background color
+								const bodyElement = document.querySelector("body");
+								bodyElement.style.background = "#d8d8d8";
 							}}
 						>
 							<StopRoundedIcon></StopRoundedIcon>

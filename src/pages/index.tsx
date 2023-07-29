@@ -8,6 +8,10 @@ const pageStyles = {
 };
 
 const IndexPage: React.FunctionComponent<any> = (data): JSX.Element => {
+	const bodyElement = document.querySelector("body");
+	bodyElement.style.background = "#d8d8d8";
+	bodyElement.style.transition = "background 2s ease-in";
+
 	return (
 		<main style={pageStyles}>
 			<Layout></Layout>

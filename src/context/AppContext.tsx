@@ -3,6 +3,7 @@ import * as Tone from "tone";
 import { IAudio } from "../types/IAudio";
 import { ISwatch } from "../types/ISwatch";
 import { getImage } from "gatsby-plugin-image";
+import { HexToHSL } from "../components/colorPicker/Helpers";
 
 export interface IAppContextProps {
 	children: React.ReactNode;
@@ -120,6 +121,28 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			setDownloads(foundDownloads);
 		}
 	};
+
+	React.useEffect(() => {
+		if (selectedAudio?.CardColor) {
+			// Update page color
+			const baseColor: string = selectedAudio?.CardColor;
+			const hslValues: number[] = HexToHSL(baseColor);
+			const hueFactor: number = 2;
+			const saturationFactor: number = hslValues[1] / 10;
+			const lightnessFactor: number = hslValues[2] / 1000;
+
+			for (let i = 0; i < 5; i++) {
+				const backgroundColor: string = ("hsl(" + (hslValues[0] + i * 4 * hueFactor) + ", " + (hslValues[1] + (Math.pow(i, 2) - 7) * saturationFactor) + "%, " + (hslValues[2] + (Math.pow(i, 2) + 90) * lightnessFactor) + "%)") as string;
+
+				if (i === 1) {
+					const bodyElement = document.querySelector("body");
+					bodyElement.style.background = backgroundColor;
+					bodyElement.style.height = "100%";
+					bodyElement.style.transition = "background 1s ease-in";
+				}
+			}
+		}
+	}, [selectedAudio]);
 
 	React.useEffect(() => {
 		setData();
