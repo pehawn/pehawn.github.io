@@ -23,4 +23,4 @@ const IndexPage: React.FunctionComponent<any> = (data): JSX.Element => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>PH</title>;
+export const Head: HeadFC = () => <title>Patrick Hawn</title>;

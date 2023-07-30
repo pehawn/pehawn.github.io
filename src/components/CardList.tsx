@@ -2,7 +2,7 @@ import { Box, Button, Card, CardContent, CardMedia, Divider, Grid, IconButton, S
 import React from "react";
 import { AppContext } from "../context/AppContext";
 import { IAudio } from "../types/IAudio";
-import { createStyles, styled, Theme, useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CasinoIcon from "@mui/icons-material/Casino";
@@ -10,7 +10,7 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import "@fontsource-variable/cinzel";
 import { HexToHSL } from "./colorPicker/Helpers";
-import * as Tone from "tone";
+import { Helmet } from "react-helmet";
 
 interface ICardList {
 	setScrollHeight(scrollHeight: number): void;
@@ -196,6 +196,9 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 
 	return (
 		<React.Fragment>
+			<Helmet>
+				<meta name="theme-color" content="#eeeeee" />
+			</Helmet>
 			<div id="cardList" style={{ flexGrow: 1, padding: theme.spacing(2) }}>
 				<Grid container spacing={2} direction="row" columns={{ xs: 1, sm: 4, md: 8 }}>
 					{appContext.Tracks.map((track: IAudio) => (

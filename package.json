@@ -38,6 +38,7 @@
 		"react": "^18.1.0",
 		"react-compound-slider": "^3.4.0",
 		"react-dom": "^18.1.0",
+		"react-helmet": "^6.1.0",
 		"sass": "^1.54.9",
 		"tone": "^14.7.39"
 	},
