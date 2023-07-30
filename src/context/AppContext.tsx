@@ -131,7 +131,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			const saturationFactor: number = hslValues[1] / 10;
 			const lightnessFactor: number = hslValues[2] / 1000;
 
-			for (let i = 0; i < 5; i++) {
+			for (let i = 0; i < 2; i++) {
 				const backgroundColor: string = ("hsl(" + (hslValues[0] + i * 4 * hueFactor) + ", " + (hslValues[1] + (Math.pow(i, 2) - 7) * saturationFactor) + "%, " + (hslValues[2] + (Math.pow(i, 2) + 90) * lightnessFactor) + "%)") as string;
 
 				if (i === 1) {
