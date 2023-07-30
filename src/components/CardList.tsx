@@ -196,9 +196,9 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 
 	return (
 		<React.Fragment>
-			{/* <Helmet>
+			<Helmet>
 				<meta name="theme-color" content="#eeeeee" />
-			</Helmet> */}
+			</Helmet>
 			<div id="cardList" style={{ flexGrow: 1, padding: theme.spacing(2) }}>
 				<Grid container spacing={2} direction="row" columns={{ xs: 1, sm: 4, md: 8 }}>
 					{appContext.Tracks.map((track: IAudio) => (
