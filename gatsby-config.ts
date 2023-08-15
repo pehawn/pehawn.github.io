@@ -16,14 +16,14 @@ const config: GatsbyConfig = {
 			resolve: "gatsby-source-filesystem",
 			options: {
 				name: `songs`,
-				path: `${__dirname}/songs`
+				path: `${__dirname}/src/assets/songs`
 			}
 		},
 		{
 			resolve: "gatsby-source-filesystem",
 			options: {
 				name: `downloads`,
-				path: `${__dirname}/downloads`
+				path: `${__dirname}/src/assets/downloads`
 			}
 		},
 		"gatsby-plugin-mdx",

@@ -21,17 +21,25 @@ export interface IAppContext {
 	Recorder: any;
 	DistortionLevel: number;
 	DistortionEffect: any;
-	TremoloLevel: number;
-	TremoloEffect: any;
+	FeedbackDelayLevel: number;
+	FeedbackDelayEffect: any;
 	ChorusLevel: number;
 	ChorusEffect: any;
 	VibratoLevel: number;
 	VibratoEffect: any;
+	LowPassFilterLevel: number;
+	LowPassFilterEffect: any;
+	ReverbLevel: number;
+	ReverbEffect: any;
+	PhaserLevel: number;
+	PhaserEffect: any;
 	PitchLevel: number;
 	PitchEffect: any;
 	TempoLevel: number;
 	VisualTempoLevel: number;
 	PlayerTimestamp: number;
+	DisplayTutorialDialog: boolean;
+	DisplayTrainingModules: boolean[];
 	SetTempoLevel(tempo: number): void;
 	SetSelectedSwatch(swatch: ISwatch): void;
 	SetUpdateSwatch(update: boolean): void;
@@ -40,36 +48,62 @@ export interface IAppContext {
 	SetPlayerTimestamp(time: number): void;
 	UpdateSelectedAudio(audio: IAudio, randomizeEffects: boolean): void;
 	HandleDistortionLevel(event: Event, value: number, activeThumb: number): void;
-	HandleTremoloLevel(event: Event, value: number, activeThumb: number): void;
+	HandleFeedbackDelayLevel(event: Event, value: number, activeThumb: number): void;
 	HandleChorusLevel(event: Event, value: number, activeThumb: number): void;
 	HandleVibratoLevel(event: Event, value: number, activeThumb: number): void;
+	HandleLowPassFilterLevel(event: Event, value: number, activeThumb: number): void;
+	HandleReverbLevel(event: Event, value: number, activeThumb: number): void;
+	HandlePhaserLevel(event: Event, value: number, activeThumb: number): void;
 	HandlePitchLevel(event: Event, value: number, activeThumb: number): void;
 	HandleTempoLevel(event: Event, value: number, activeThumb: number): void;
 	ResetToDefaults(): void;
 	ResetVolumeLevels(): void;
+	SetDisplayTutorialDialog(displayTutorialDialog: boolean): void;
+	SetDisplayTrainingModules(displayTrainingModules: boolean[]): void;
 }
 
 export const AppContext = React.createContext<IAppContext>(undefined);
 
 export const AppContextProvider = (props: IAppContextProps) => {
+	// Workaround for mobile slider events, extra mouse down event was getting registered on
+	// mobile and causing slider value to jump. Detect what type of device is being used
+	const iOS = (): boolean => {
+		const platform = navigator.userAgent || navigator.platform;
+
+		return (
+			["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(platform) ||
+			// iPad on iOS 13 detection
+			(navigator.userAgent.includes("Mac") && "ontouchend" in document)
+		);
+	};
+	const isIOS = iOS();
+
 	const [swatches, setSwatches] = React.useState<ISwatch[]>([]);
 	const [selectedSwatch, setSelectedSwatch] = React.useState<ISwatch>(null);
 	const [updateSwatch, setUpdateSwatch] = React.useState<boolean>(true);
 	const [selectedAudio, setSelectedAudio] = React.useState<IAudio>(null);
 	const [distortionEffect, setDistortionEffect] = React.useState(null);
 	const [distortionLevel, setDistortionLevel] = React.useState<number>(0);
-	const [tremoloEffect, setTremoloEffect] = React.useState(null);
-	const [tremoloLevel, setTremoloLevel] = React.useState<number>(0);
+	const [feedbackDelayEffect, setFeedbackDelayEffect] = React.useState(null);
+	const [feedbackDelayLevel, setFeedbackDelayLevel] = React.useState<number>(0);
 	const [chorusEffect, setChorusEffect] = React.useState(null);
 	const [chorusLevel, setChorusLevel] = React.useState<number>(0);
 	const [vibratoEffect, setVibratoEffect] = React.useState(null);
 	const [vibratoLevel, setVibratoLevel] = React.useState<number>(0);
+	const [lowPassFilterEffect, setLowPassFilterEffect] = React.useState(null);
+	const [lowPassFilterLevel, setLowPassFilterLevel] = React.useState<number>(0);
+	const [reverbEffect, setReverbEffect] = React.useState(null);
+	const [reverbLevel, setReverbLevel] = React.useState<number>(0);
+	const [phaserEffect, setPhaserEffect] = React.useState(null);
+	const [phaserLevel, setPhaserLevel] = React.useState<number>(0);
 	const [pitchEffect, setPitchEffect] = React.useState(null);
 	const [pitchLevel, setPitchLevel] = React.useState<number>(0);
 	// Used to display tempo level to user but not used for calculations when determining duration
 	const [visualTempoLevel, setVisualTempoLevel] = React.useState<number>(1);
 	const [tempoLevel, setTempoLevel] = React.useState<number>(1);
 	const [playerTimestamp, setPlayerTimestamp] = React.useState<number>(null);
+	const [displayTutorialDialog, setDisplayTutorialDialog] = React.useState<boolean>(true);
+	const [displayTrainingModules, setDisplayTrainingModules] = React.useState<boolean[]>([false, false, false, false, false, false]);
 
 	const [tracks, setTracks] = React.useState<IAudio[]>([]);
 	const [downloads, setDownloads] = React.useState<string[]>([]);
@@ -117,6 +151,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			// Sort tracks based on album color in ascending order
 			foundTracks.sort((a, b) => a.Order - b.Order);
 
+			const showTutorial: boolean = JSON.parse(localStorage.getItem("ShowTutorial"));
+			setDisplayTutorialDialog(showTutorial ?? true);
+
 			setTracks(foundTracks);
 			setDownloads(foundDownloads);
 		}
@@ -150,10 +187,13 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 	const setEffectsChain = (randomizeEffects: boolean): void => {
 		const distValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : distortionLevel;
-		const tremoloValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : tremoloLevel;
+		const feedbackDelayValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : feedbackDelayLevel;
 		const vibratoValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : vibratoLevel;
 		const chorusValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : chorusLevel;
 		const pitchValue: number = randomizeEffects ? Math.floor(Math.random() * (12 - -12 + 1)) + -12 : pitchLevel;
+		const reverbValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : reverbLevel;
+		const lowPassFilterValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : lowPassFilterLevel;
+		const phaserValue: number = randomizeEffects ? Math.floor(Math.random() * 100) : phaserLevel;
 
 		let tempDistortion = new Tone.Distortion(1);
 		tempDistortion.wet.value = distValue / 100;
@@ -161,30 +201,45 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		let tempPitch = new Tone.PitchShift();
 		tempPitch.pitch = pitchValue;
 
-		let tempTremelo = new Tone.Tremolo(10, 1);
-		tempTremelo.wet.value = tremoloValue / 100;
+		let tempFeedbackDelay = new Tone.FeedbackDelay(1, 0.5);
+		tempFeedbackDelay.wet.value = feedbackDelayValue / 100;
 
 		let tempVibrato = new Tone.Vibrato(15, 1);
 		tempVibrato.wet.value = vibratoValue / 100;
 
-		let tempChorus = new Tone.Chorus(15, 6, 1);
+		let tempChorus = new Tone.Chorus(1, 150, 4);
 		tempChorus.wet.value = chorusValue / 100;
+
+		let tempLowPassFilter = new Tone.AutoFilter(1, 150, 4);
+		tempLowPassFilter.wet.value = lowPassFilterValue / 100;
+
+		let tempReverb = new Tone.Reverb(3);
+		tempReverb.wet.value = reverbValue / 100;
+
+		let tempPhaser = new Tone.Phaser();
+		tempPhaser.wet.value = phaserValue / 100;
 
 		if (randomizeEffects) {
 			setPitchLevel(pitchValue);
-			setTremoloLevel(tremoloValue);
+			setFeedbackDelayLevel(feedbackDelayValue);
 			setVibratoLevel(vibratoValue);
 			setChorusLevel(chorusValue);
 			setDistortionLevel(distValue);
+			setLowPassFilterLevel(lowPassFilterValue);
+			setReverbLevel(reverbValue);
+			setPhaserLevel(phaserValue);
 		}
 
 		setDistortionEffect(tempDistortion);
 		setPitchEffect(tempPitch);
-		setTremoloEffect(tempTremelo);
+		setFeedbackDelayEffect(tempFeedbackDelay);
 		setVibratoEffect(tempVibrato);
 		setChorusEffect(tempChorus);
+		setLowPassFilterEffect(tempLowPassFilter);
+		setReverbEffect(tempReverb);
+		setPhaserEffect(tempPhaser);
 
-		Tone.Destination.chain(tempDistortion, tempPitch, tempTremelo, tempVibrato, tempChorus);
+		Tone.Destination.chain(tempDistortion, tempPitch, tempFeedbackDelay, tempVibrato, tempChorus, tempLowPassFilter, tempReverb, tempPhaser);
 	};
 
 	const updateSelectedAudio = async (audio: IAudio, randomizeEffects: boolean): Promise<void> => {
@@ -211,9 +266,12 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 			distortionEffect.dispose();
 			chorusEffect.dispose();
-			tremoloEffect.dispose();
+			feedbackDelayEffect.dispose();
 			vibratoEffect.dispose();
 			pitchEffect.dispose();
+			lowPassFilterEffect.dispose();
+			reverbEffect.dispose();
+			phaserEffect.dispose();
 
 			if (recorderRef.current) {
 				recorderRef.current.dispose();
@@ -318,9 +376,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setPitchLevel(0);
 		setPitchEffect(pitchEffect);
 
-		tremoloEffect.wet.value = 0;
-		setTremoloLevel(0);
-		setTremoloEffect(tremoloEffect);
+		feedbackDelayEffect.wet.value = 0;
+		setFeedbackDelayLevel(0);
+		setFeedbackDelayEffect(feedbackDelayEffect);
 
 		chorusEffect.wet.value = 0;
 		setChorusLevel(0);
@@ -329,6 +387,18 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		vibratoEffect.wet.value = 0;
 		setVibratoLevel(0);
 		setVibratoEffect(vibratoEffect);
+
+		lowPassFilterEffect.wet.value = 0;
+		setLowPassFilterLevel(0);
+		setLowPassFilterEffect(lowPassFilterEffect);
+
+		reverbEffect.wet.value = 0;
+		setReverbLevel(0);
+		setReverbEffect(reverbEffect);
+
+		phaserEffect.wet.value = 0;
+		setPhaserLevel(0);
+		setPhaserEffect(phaserEffect);
 
 		if (selectedAudio.Stems.length > 0) {
 			let duration: number = 0;
@@ -380,17 +450,32 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	};
 
 	const handleDistortionLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
 		const convertedDistLevel: number = value / 100;
 		distortionEffect.wet.value = convertedDistLevel;
 		setDistortionLevel(value);
 	};
 
 	const handlePitchLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
 		pitchEffect.pitch = value;
 		setPitchLevel(value);
 	};
 
 	const handleTempoLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
 		if (selectedAudio.Stems.length > 0) {
 			selectedAudio.Stems.forEach((stem) => {
 				playerRef.current.player(stem.Name).playbackRate = value;
@@ -402,22 +487,70 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setVisualTempoLevel(value);
 	};
 
-	const handleTremoloLevel = (event: Event, value: number, activeThumb: number): void => {
-		const convertedTremoloLevel: number = value / 100;
-		tremoloEffect.wet.value = convertedTremoloLevel;
-		setTremoloLevel(value);
+	const handleFeedbackDelayLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
+		const convertedFeedbackDelayLevel: number = value / 100;
+		feedbackDelayEffect.wet.value = convertedFeedbackDelayLevel;
+		setFeedbackDelayLevel(value);
 	};
 
 	const handleChorusLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
 		const convertedChorusLevel: number = value / 100;
 		chorusEffect.wet.value = convertedChorusLevel;
 		setChorusLevel(value);
 	};
 
 	const handleVibratoLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
 		const convertedVibratoLevel: number = value / 100;
 		vibratoEffect.wet.value = convertedVibratoLevel;
 		setVibratoLevel(value);
+	};
+
+	const handleLowPassFilterLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
+		const convertedLowPassFilterLevel: number = value / 100;
+		lowPassFilterEffect.wet.value = convertedLowPassFilterLevel;
+		setLowPassFilterLevel(value);
+	};
+
+	const handleReverbLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
+		const convertedReverbLevel: number = value / 100;
+		reverbEffect.wet.value = convertedReverbLevel;
+		setReverbLevel(value);
+	};
+
+	const handlePhaserLevel = (event: Event, value: number, activeThumb: number): void => {
+		// Workaround for mobile slider events, extra mouse down event was getting registered on
+		// mobile and causing slider value to jump
+		if (event.type === "mousedown" && isIOS) {
+			return;
+		}
+		const convertedPhaserLevel: number = value / 100;
+		phaserEffect.wet.value = convertedPhaserLevel;
+		setPhaserLevel(value);
 	};
 
 	const contextObject: IAppContext = {
@@ -431,17 +564,25 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		Recorder: recorderRef,
 		DistortionLevel: distortionLevel,
 		DistortionEffect: distortionEffect,
-		TremoloLevel: tremoloLevel,
-		TremoloEffect: tremoloEffect,
+		FeedbackDelayLevel: feedbackDelayLevel,
+		FeedbackDelayEffect: feedbackDelayEffect,
 		ChorusLevel: chorusLevel,
 		ChorusEffect: chorusEffect,
 		VibratoLevel: vibratoLevel,
 		VibratoEffect: vibratoEffect,
+		LowPassFilterLevel: lowPassFilterLevel,
+		LowPassFilterEffect: lowPassFilterEffect,
+		ReverbLevel: reverbLevel,
+		ReverbEffect: reverbEffect,
+		PhaserLevel: phaserLevel,
+		PhaserEffect: phaserEffect,
 		PitchLevel: pitchLevel,
 		PitchEffect: pitchEffect,
 		TempoLevel: tempoLevel,
 		VisualTempoLevel: visualTempoLevel,
 		PlayerTimestamp: playerTimestamp,
+		DisplayTutorialDialog: displayTutorialDialog,
+		DisplayTrainingModules: displayTrainingModules,
 		SetTempoLevel: setTempoLevel,
 		SetSelectedSwatch: setSelectedSwatch,
 		SetUpdateSwatch: setUpdateSwatch,
@@ -450,13 +591,18 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		SetPlayerTimestamp: setPlayerTimestamp,
 		UpdateSelectedAudio: updateSelectedAudio,
 		HandleDistortionLevel: handleDistortionLevel,
-		HandleTremoloLevel: handleTremoloLevel,
+		HandleFeedbackDelayLevel: handleFeedbackDelayLevel,
 		HandleVibratoLevel: handleVibratoLevel,
 		HandleChorusLevel: handleChorusLevel,
+		HandleLowPassFilterLevel: handleLowPassFilterLevel,
+		HandleReverbLevel: handleReverbLevel,
+		HandlePhaserLevel: handlePhaserLevel,
 		HandlePitchLevel: handlePitchLevel,
 		HandleTempoLevel: handleTempoLevel,
 		ResetToDefaults: resetToDefaults,
-		ResetVolumeLevels: resetVolumeLevels
+		ResetVolumeLevels: resetVolumeLevels,
+		SetDisplayTutorialDialog: setDisplayTutorialDialog,
+		SetDisplayTrainingModules: setDisplayTrainingModules
 	};
 
 	return <AppContext.Provider value={contextObject}>{props.children}</AppContext.Provider>;

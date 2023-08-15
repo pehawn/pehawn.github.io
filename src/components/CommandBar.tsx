@@ -41,6 +41,18 @@ import { IAudio } from "../types/IAudio";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import SchoolIcon from "@mui/icons-material/School";
+import TrainingModuleDialog from "./TrainingModuleDialog";
+// @ts-ignore
+import TrainingEffects from "../assets/training/TrainingEffects.mp4";
+// @ts-ignore
+import TrainingLooper from "../assets/training/TrainingLooper.mp4";
+// @ts-ignore
+import TrainingPlayerControls from "../assets/training/TrainingPlayerControls.mp4";
+// @ts-ignore
+import TrainingRecord from "../assets/training/TrainingRecord.mp4";
+// @ts-ignore
+import TrainingStems from "../assets/training/TrainingStems.mp4";
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 	<Tooltip
@@ -105,6 +117,12 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const stemsRef = React.useRef();
 	const profileRef = React.useRef();
 	const downloadsRef = React.useRef();
+	const trainingRef = React.useRef();
+	const trainingEffects = React.useRef();
+	const trainingStems = React.useRef();
+	const trainingRecord = React.useRef();
+	const trainingPlayerControls = React.useRef();
+	const trainingLooper = React.useRef();
 
 	const [recordTheme, setRecordTheme] = React.useState<any>(darkGreyTheme);
 	const [recordingTooltip, setRecordingTooltip] = React.useState<string>("Say Hello");
@@ -125,6 +143,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const [profileAnchorEl, setProfileAnchorEl] = React.useState();
 	const [showDownloadsDialog, setShowDownloadsDialog] = React.useState<boolean>(false);
 	const [downloadsAnchorEl, setDownloadsAnchorEl] = React.useState();
+	const [trainingAnchorEl, setTrainingAnchorEl] = React.useState();
 
 	const loadLoop = async (): Promise<void> => {
 		Tone.Transport.cancel();
@@ -208,6 +227,20 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 			loadLoop();
 		}
 	}, [startLoopEnabled, endLoopEnabled]);
+
+	React.useEffect(() => {
+		if (appContext.DisplayTrainingModules[1]) {
+			setTrainingAnchorEl(trainingEffects.current);
+		} else if (appContext.DisplayTrainingModules[2]) {
+			setTrainingAnchorEl(trainingStems.current);
+		} else if (appContext.DisplayTrainingModules[3]) {
+			setTrainingAnchorEl(trainingRecord.current);
+		} else if (appContext.DisplayTrainingModules[4]) {
+			setTrainingAnchorEl(trainingPlayerControls.current);
+		} else if (appContext.DisplayTrainingModules[5]) {
+			setTrainingAnchorEl(trainingLooper.current);
+		}
+	}, [appContext.DisplayTrainingModules]);
 
 	const updateRecordTheme = async (): Promise<void> => {
 		if (recordTheme.palette.primary.main === "#9a9a9a") {
@@ -398,6 +431,17 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 		);
 	};
 
+	const renderTrainingModules = async (): Promise<void> => {
+		let titleSong: IAudio = appContext.Tracks.find((track: IAudio) => track.Name === "INTROVERT");
+		titleSong.Reversed = false;
+
+		await appContext.UpdateSelectedAudio(titleSong, false);
+
+		let displayTrainingModules: boolean[] = appContext.DisplayTrainingModules?.slice();
+		displayTrainingModules[0] = true;
+		appContext.SetDisplayTrainingModules(displayTrainingModules);
+	};
+
 	const renderLooperDialog = (): JSX.Element => {
 		return (
 			<Popover
@@ -510,7 +554,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 				}}
 				sx={{
 					"& .MuiPaper-root": {
-						overflowY: "hidden"
+						overflowY: "hidden",
+						padding: ".5em .75em .5em .5em"
 					}
 				}}
 			>
@@ -654,8 +699,8 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 					</ThemeProvider>
 					<Slider
 						disabled={Tone.Transport.state !== "started"}
-						value={appContext.TremoloLevel}
-						onChange={appContext.HandleTremoloLevel}
+						value={appContext.FeedbackDelayLevel}
+						onChange={appContext.HandleFeedbackDelayLevel}
 						valueLabelDisplay={"auto"}
 						sx={{
 							"& .MuiSlider-thumb": {
@@ -724,11 +769,90 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						}}
 					/>
 				</Stack>
-				{/* Phaser */}
-				{/* Reverb */}
-				{/* Delay */}
-				{/* Bit Crusher */}
-				{/* Filter */}
+				<Stack
+					width="10em"
+					spacing={2}
+					direction="row"
+					sx={{
+						m: 0.5
+					}}
+					alignItems="center"
+				>
+					<ThemeProvider theme={darkGreyTheme}>
+						<SmokingRoomsIcon color={"primary"} />
+					</ThemeProvider>
+					<Slider
+						disabled={Tone.Transport.state !== "started"}
+						value={appContext.LowPassFilterLevel}
+						onChange={appContext.HandleLowPassFilterLevel}
+						valueLabelDisplay={"auto"}
+						sx={{
+							"& .MuiSlider-thumb": {
+								borderRadius: "30%",
+								width: "5px",
+								"&:hover, &.Mui-focusVisible, &.Mui-active": {
+									boxShadow: "none"
+								}
+							}
+						}}
+					/>
+				</Stack>
+				<Stack
+					width="10em"
+					spacing={2}
+					direction="row"
+					sx={{
+						m: 0.5
+					}}
+					alignItems="center"
+				>
+					<ThemeProvider theme={darkGreyTheme}>
+						<RouterIcon color={"primary"} />
+					</ThemeProvider>
+					<Slider
+						disabled={Tone.Transport.state !== "started"}
+						value={appContext.ReverbLevel}
+						onChange={appContext.HandleReverbLevel}
+						valueLabelDisplay={"auto"}
+						sx={{
+							"& .MuiSlider-thumb": {
+								borderRadius: "30%",
+								width: "5px",
+								"&:hover, &.Mui-focusVisible, &.Mui-active": {
+									boxShadow: "none"
+								}
+							}
+						}}
+					/>
+				</Stack>
+				<Stack
+					width="10em"
+					spacing={2}
+					direction="row"
+					sx={{
+						m: 0.5
+					}}
+					alignItems="center"
+				>
+					<ThemeProvider theme={darkGreyTheme}>
+						<HeartBrokenIcon color={"primary"} />
+					</ThemeProvider>
+					<Slider
+						disabled={Tone.Transport.state !== "started"}
+						value={appContext.PhaserLevel}
+						onChange={appContext.HandlePhaserLevel}
+						valueLabelDisplay={"auto"}
+						sx={{
+							"& .MuiSlider-thumb": {
+								borderRadius: "30%",
+								width: "5px",
+								"&:hover, &.Mui-focusVisible, &.Mui-active": {
+									boxShadow: "none"
+								}
+							}
+						}}
+					/>
+				</Stack>
 			</Popover>
 		);
 	};
@@ -1102,6 +1226,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						}}
 					>
 						<Stack spacing={1.5} direction="row">
+							{renderPlayerTrainingStems()}
 							<span ref={stemsRef}>
 								<ThemeProvider theme={darkGreyTheme}>
 									<IconButton
@@ -1176,6 +1301,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 									{renderPlayerControlsDialog()}
 								</ThemeProvider>
 							</span>
+							{renderPlayerTrainingPlayerControls()}
 						</Stack>
 					</div>
 				</React.Fragment>
@@ -1251,6 +1377,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						}}
 					>
 						<Stack spacing={1.5} direction="row">
+							{renderPlayerTrainingStems()}
 							<span ref={stemsRef}>
 								<ThemeProvider theme={darkGreyTheme}>
 									<IconButton
@@ -1308,6 +1435,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 								/>
 								{renderTimingInfo()}
 							</div>
+							{renderPlayerTrainingPlayerControls()}
 							<span ref={playerControlsRef}>
 								<ThemeProvider theme={darkGreyTheme}>
 									<IconButton
@@ -1330,6 +1458,111 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 				</div>
 			);
 		}
+	};
+
+	const renderPlayerTrainingEffects = (): JSX.Element => {
+		const open: boolean = appContext.DisplayTrainingModules[1] && trainingAnchorEl;
+
+		return (
+			<span ref={trainingEffects}>
+				<TrainingModuleDialog
+					finalStep={false}
+					isOpen={open}
+					closeDialog={() => {
+						setTrainingAnchorEl(null);
+					}}
+					currentStep={2}
+					headerText="2 of 6"
+					trainingAnchorEl={isMobile ? null : trainingAnchorEl}
+					trainingText="Transform the audio's sound using the effect sliders. Press the recycle icon to reset the effect sliders to default."
+					trainingVideo={TrainingEffects}
+				/>
+			</span>
+		);
+	};
+
+	const renderPlayerTrainingStems = (): JSX.Element => {
+		const open: boolean = appContext.DisplayTrainingModules[2] && trainingAnchorEl;
+
+		return (
+			<span ref={trainingStems}>
+				<TrainingModuleDialog
+					finalStep={false}
+					isOpen={open}
+					closeDialog={() => {
+						setTrainingAnchorEl(null);
+					}}
+					currentStep={3}
+					headerText="3 of 6"
+					trainingAnchorEl={isMobile ? null : trainingAnchorEl}
+					trainingText="Isolate the audio's instruments using the stem sliders. Press the sound icon to mute the track. Press the recycle icon to reset the stem sliders to default."
+					trainingVideo={TrainingStems}
+				/>
+			</span>
+		);
+	};
+
+	const renderPlayerTrainingLooper = (): JSX.Element => {
+		const open: boolean = appContext.DisplayTrainingModules[3] && trainingAnchorEl;
+
+		return (
+			<span ref={trainingLooper}>
+				<TrainingModuleDialog
+					finalStep={false}
+					isOpen={open}
+					closeDialog={() => {
+						setTrainingAnchorEl(null);
+					}}
+					currentStep={4}
+					headerText="4 of 6"
+					trainingAnchorEl={isMobile ? null : trainingAnchorEl}
+					trainingText="Repeat a specific section of the audio using the looper dialog. Press the start button to define the beginning point and end button to define the end point. Press the cancel button to stop looping."
+					trainingVideo={TrainingLooper}
+				/>
+			</span>
+		);
+	};
+
+	const renderPlayerTrainingPlayerControls = (): JSX.Element => {
+		const open: boolean = appContext.DisplayTrainingModules[4] && trainingAnchorEl;
+
+		return (
+			<span ref={trainingPlayerControls}>
+				<TrainingModuleDialog
+					finalStep={false}
+					isOpen={open}
+					closeDialog={() => {
+						setTrainingAnchorEl(null);
+					}}
+					currentStep={5}
+					headerText="5 of 6"
+					trainingAnchorEl={isMobile ? null : trainingAnchorEl}
+					trainingText="Pause, stop, fast forward, or rewind the audio using the respective controls."
+					trainingVideo={TrainingPlayerControls}
+				/>
+			</span>
+		);
+	};
+
+	const renderPlayerTrainingRecord = (): JSX.Element => {
+		const open: boolean = appContext.DisplayTrainingModules[5] && trainingAnchorEl;
+
+		return (
+			<span ref={trainingRecord}>
+				<TrainingModuleDialog
+					finalStep={true}
+					isOpen={open}
+					closeDialog={() => {
+						setTrainingAnchorEl(null);
+					}}
+					currentStep={6}
+					headerText="6 of 6"
+					trainingAnchorEl={isMobile ? null : trainingAnchorEl}
+					trainingText="If you configure or enjoy a track's section and want to keep it, use the record button to capture the desired audio. The file will be downloaded to your browser's window."
+					trainingVideo={TrainingRecord}
+				/>
+			</span>
+		);
 	};
 
 	return (
@@ -1392,6 +1625,21 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							{renderDownloadsDialog()}
 						</ThemeProvider>
 					</span>
+					<span ref={trainingRef}>
+						<ThemeProvider theme={darkGreyTheme}>
+							<IconButton
+								color={"primary"}
+								style={{
+									backgroundColor: "transparent"
+								}}
+								onClick={() => {
+									renderTrainingModules();
+								}}
+							>
+								<SchoolIcon></SchoolIcon>
+							</IconButton>
+						</ThemeProvider>
+					</span>
 				</div>
 				{renderPlayerInfo()}
 				<div
@@ -1404,6 +1652,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						paddingRight: ".6em"
 					}}
 				>
+					{renderPlayerTrainingLooper()}
 					<span ref={looperRef}>
 						<ThemeProvider theme={darkGreyTheme}>
 							{/* <LightTooltip
@@ -1427,6 +1676,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							{renderLooperDialog()}
 						</ThemeProvider>
 					</span>
+					{renderPlayerTrainingEffects()}
 					<span ref={effectsRef}>
 						<ThemeProvider theme={darkGreyTheme}>
 							<IconButton
@@ -1458,6 +1708,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 						</IconButton>
 						{/* </LightTooltip> */}
 					</ThemeProvider>
+					{renderPlayerTrainingRecord()}
 				</div>
 			</div>
 			{renderMobilePlayerInfo()}
