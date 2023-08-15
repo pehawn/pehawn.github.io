@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, CardMedia, Divider, Grid, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CardMedia, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, Popover, Slide, Stack, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { AppContext } from "../context/AppContext";
 import { IAudio } from "../types/IAudio";
@@ -11,6 +11,11 @@ import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import "@fontsource-variable/cinzel";
 import { HexToHSL } from "./colorPicker/Helpers";
 import { Helmet } from "react-helmet";
+import { TransitionProps } from "@mui/material/transitions";
+import * as Tone from "tone";
+// @ts-ignore
+import TrainingStartOptions from "../assets/training/TrainingStartOptions.mp4";
+import TrainingModuleDialog from "./TrainingModuleDialog";
 
 interface ICardList {
 	setScrollHeight(scrollHeight: number): void;
@@ -19,7 +24,29 @@ interface ICardList {
 const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 	const appContext = React.useContext(AppContext);
 
+	const trainingStartAudio = React.useRef();
+
+	const [trainingAnchorEl, setTrainingAnchorEl] = React.useState();
+
 	const theme = useTheme();
+
+	React.useEffect(() => {
+		if (!appContext.DisplayTutorialDialog && appContext.SelectedAudio && appContext.DisplayTrainingModules.some((showModule) => showModule === true)) {
+			Tone.Transport.pause();
+		}
+	}, [appContext.SelectedAudio]);
+
+	React.useEffect(() => {
+		if (appContext.DisplayTrainingModules[0]) {
+			setTrainingAnchorEl(trainingStartAudio.current);
+		}
+	}, [appContext.DisplayTrainingModules]);
+
+	React.useEffect(() => {
+		const pixelScrollHeight: number = document.getElementById("cardList")?.scrollHeight;
+		const vhScrollHeight: number = (100 * pixelScrollHeight) / window.innerHeight;
+		props.setScrollHeight(vhScrollHeight);
+	}, []);
 
 	const TinyText = styled(Typography)({
 		fontSize: ".8rem",
@@ -28,11 +55,69 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 		letterSpacing: 0.2
 	});
 
+	let isMobile = false;
+
+	if (typeof window !== "undefined") {
+		isMobile = window.innerWidth <= 768;
+	}
+
+	// const Transition = React.forwardRef(function Transition(
+	// 	props: TransitionProps & {
+	// 		children: React.ReactElement<any, any>;
+	// 	},
+	// 	ref: React.Ref<unknown>
+	// ) {
+	// 	return <Slide direction="up" ref={ref} {...props} />;
+	// });
+
+	const renderTrainingModules = async (): Promise<void> => {
+		localStorage.setItem("ShowTutorial", JSON.stringify(false));
+
+		let titleSong: IAudio = appContext.Tracks.find((track: IAudio) => track.Name === "INTROVERT");
+		titleSong.Reversed = false;
+
+		await appContext.UpdateSelectedAudio(titleSong, false);
+
+		appContext.SetDisplayTutorialDialog(false);
+		let displayTrainingModules: boolean[] = appContext.DisplayTrainingModules.slice();
+		displayTrainingModules[0] = true;
+		appContext.SetDisplayTrainingModules(displayTrainingModules);
+	};
+
+	const closeWelcomeDialog = (): void => {
+		localStorage.setItem("ShowTutorial", JSON.stringify(false));
+		appContext.SetDisplayTutorialDialog(false);
+	};
+
 	const updateAudio = (audio: IAudio, reversed: boolean, randomizeEffects: boolean): void => {
-		let tempAudio: IAudio = { ...audio };
-		tempAudio.Reversed = reversed;
-		tempAudio.Paused = false;
-		appContext.UpdateSelectedAudio(tempAudio, randomizeEffects);
+		if (!appContext.Player.current || appContext.Player.current.loaded) {
+			let tempAudio: IAudio = { ...audio };
+			tempAudio.Reversed = reversed;
+			tempAudio.Paused = false;
+			appContext.UpdateSelectedAudio(tempAudio, randomizeEffects);
+		}
+	};
+
+	const renderPlayerTrainingStartAudio = (audio: IAudio): JSX.Element => {
+		if (audio.Name === "INTROVERT") {
+			const open: boolean = appContext.DisplayTrainingModules[0] && trainingAnchorEl;
+			return (
+				<span ref={trainingStartAudio}>
+					<TrainingModuleDialog
+						finalStep={false}
+						isOpen={open}
+						closeDialog={() => {
+							setTrainingAnchorEl(null);
+						}}
+						currentStep={1}
+						headerText="1 of 6"
+						trainingAnchorEl={isMobile ? null : trainingAnchorEl}
+						trainingText="On the various cards, select an option to play a song."
+						trainingVideo={TrainingStartOptions}
+					/>
+				</span>
+			);
+		}
 	};
 
 	const renderAudio = (audio: IAudio): JSX.Element => {
@@ -65,6 +150,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 							}}
 						></PlayArrowIcon>
 					</Button>
+					{renderPlayerTrainingStartAudio(audio)}
 					<Button
 						style={{
 							transform: "none",
@@ -186,12 +272,36 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 		}
 	};
 
-	const getScrollHeight = (): JSX.Element => {
-		const pixelScrollHeight: number = document.getElementById("cardList")?.scrollHeight;
-		const vhScrollHeight: number = (100 * pixelScrollHeight) / window.innerHeight;
-		props.setScrollHeight(vhScrollHeight);
-
-		return <React.Fragment></React.Fragment>;
+	const showTutorialDialog = (): JSX.Element => {
+		if (appContext.DisplayTutorialDialog) {
+			return (
+				<ClickAwayListener onClickAway={() => appContext.SetDisplayTutorialDialog(appContext.DisplayTutorialDialog)}>
+					<Dialog transitionDuration={{ enter: 500, exit: 500 }} open={appContext.DisplayTutorialDialog} keepMounted onClose={() => appContext.SetDisplayTutorialDialog(false)} aria-describedby="alert-dialog-slide-description">
+						<DialogContent style={{ paddingBottom: "5px" }}>
+							<DialogContentText style={{ fontSize: ".95rem", opacity: 0.65, fontWeight: 450 }}>Before jumping in, do you want a quick walkthrough on how to leverage the audio player?</DialogContentText>
+						</DialogContent>
+						<DialogActions style={{ paddingLeft: "16px", justifyContent: "flex-start", paddingBottom: "20px" }}>
+							<Button
+								style={{ fontSize: ".7rem", fontWeight: 600, letterSpacing: 0.2 }}
+								onClick={() => {
+									renderTrainingModules();
+								}}
+							>
+								Beam Me Up, Scotty
+							</Button>
+							<Button
+								style={{ color: "red", fontSize: ".7rem", fontWeight: 600, letterSpacing: 0.2 }}
+								onClick={() => {
+									closeWelcomeDialog();
+								}}
+							>
+								Roads? Where we're going, we don't need roads
+							</Button>
+						</DialogActions>
+					</Dialog>
+				</ClickAwayListener>
+			);
+		}
 	};
 
 	return (
@@ -216,7 +326,7 @@ const CardList: React.FunctionComponent<ICardList> = (props): JSX.Element => {
 					))}
 				</Grid>
 			</div>
-			{getScrollHeight()}
+			{showTutorialDialog()}
 		</React.Fragment>
 	);
 };

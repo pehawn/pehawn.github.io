@@ -1,7 +1,7 @@
 import { createTheme, Grid, IconButton, ThemeProvider } from "@mui/material";
 import { Stack } from "@mui/system";
 import { graphql, useStaticQuery } from "gatsby";
-import React from "react";
+import React, { useRef } from "react";
 import { AppContextProvider } from "../context/AppContext";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import CommandBar from "./CommandBar";
@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Signature from "./Signature";
 import SignaturePlayButton from "./SignaturePlayButton";
 import CardList from "./CardList";
+import { TouchRippleActions } from "@mui/material/ButtonBase/TouchRipple";
 
 // Contains Top Action Bar With About Link In Left Hand Corner,
 // Record (Voice Message Button) Right Hand Corner.  Background Color White.
@@ -21,6 +22,12 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 	const [showHomePage, setShowHomePage] = React.useState<boolean>(true);
 	const [showSwatchesList, setShowSwatchesList] = React.useState<boolean>(false);
 	const [scrollHeight, setScrollHeight] = React.useState<number>(100);
+
+	const touchRippleRef = useRef<TouchRippleActions>(null);
+
+	React.useEffect(() => {
+		let timer = setTimeout(() => touchRippleRef.current?.pulsate(), 10000);
+	}, []);
 
 	const whiteTheme = createTheme({
 		palette: {
@@ -85,7 +92,7 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 				<div style={{ height: totalHeight }}>
 					{children}
 					<CommandBar />
-					<CardList setScrollHeight={setScrollHeight} />
+					<CardList setScrollHeight={(sh) => setScrollHeight(sh)} />
 				</div>
 			);
 		}
@@ -106,11 +113,12 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 												<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 9 }}>
 													<IconButton
 														color="primary"
-														disableRipple={true}
 														style={{
 															backgroundColor: "transparent",
 															opacity: 0.7
 														}}
+														disableTouchRipple={true}
+														touchRippleRef={touchRippleRef}
 														onClick={() => {
 															setShowHomePage(false);
 															setShowSwatchesList(true);
