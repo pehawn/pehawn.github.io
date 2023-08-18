@@ -68,13 +68,17 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	// Workaround for mobile slider events, extra mouse down event was getting registered on
 	// mobile and causing slider value to jump. Detect what type of device is being used
 	const iOS = (): boolean => {
-		const platform = navigator.userAgent || navigator.platform;
+		if (typeof window !== "undefined") {
+			const platform = navigator.userAgent || navigator.platform;
 
-		return (
-			["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(platform) ||
-			// iPad on iOS 13 detection
-			(navigator.userAgent.includes("Mac") && "ontouchend" in document)
-		);
+			return (
+				["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(platform) ||
+				// iPad on iOS 13 detection
+				(navigator.userAgent.includes("Mac") && "ontouchend" in document)
+			);
+		} else {
+			return false;
+		}
 	};
 	const isIOS = iOS();
 

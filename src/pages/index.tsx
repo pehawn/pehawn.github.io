@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { HeadFC } from "gatsby";
 import Layout from "../components/Layout";
+import { SEO } from "../components/SEO";
 
 const pageStyles = {
 	padding: 0,
@@ -23,4 +24,4 @@ const IndexPage: React.FunctionComponent<any> = (data): JSX.Element => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>Patrick Hawn</title>;
+export const Head: HeadFC = () => <SEO />;
