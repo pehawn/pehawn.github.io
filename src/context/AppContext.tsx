@@ -4,7 +4,7 @@ import { IAudio } from "../types/IAudio";
 import { ISwatch } from "../types/ISwatch";
 import { getImage } from "gatsby-plugin-image";
 import { HexToHSL } from "../components/colorPicker/Helpers";
-import useReactHook, { ReactHook } from "../hooks/UseHookWithLabel";
+import useReactHook, { ReactHook } from "../hooks/UseHookDevToolsLabel";
 
 export interface IAppContextProps {
 	children: React.ReactNode;
