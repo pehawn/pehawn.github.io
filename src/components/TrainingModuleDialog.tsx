@@ -12,6 +12,7 @@ interface ITrainingModuleDialog {
 	headerText?: string;
 	currentStep?: number;
 	finalStep?: boolean;
+	uuid?: string;
 	closeDialog(): void;
 }
 
@@ -73,6 +74,7 @@ const TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (pr
 			}}
 			sx={{ maxWidth: "30em" }}
 			componentsProps={{ backdrop: { style: { backgroundColor: "rgba(0, 0, 0, 0.5)" } } }}
+			key={`trainingpopover${props.uuid}`}
 		>
 			<div
 				style={{
@@ -80,6 +82,7 @@ const TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (pr
 					padding: "1em 1em 1em 1em",
 					verticalAlign: "center"
 				}}
+				key={`trainingouterdiv${props.uuid}`}
 			>
 				<div
 					style={{
@@ -88,16 +91,25 @@ const TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (pr
 						left: "0",
 						display: "contents"
 					}}
+					key={`traininginnerdiv${props.uuid}`}
 				>
-					<Card>
-						<CardContent>
-							<Typography sx={{ fontSize: ".95rem", opacity: 0.65, fontWeight: 450 }}>{props.headerText}</Typography>
-							<TrainingModuleVideo video={props.trainingVideo} />
-							<Typography sx={{ fontSize: ".75rem", opacity: 0.65, fontWeight: 450 }}>{props.trainingText}</Typography>
+					<Card key={`trainingcard${props.uuid}`}>
+						<CardContent key={`trainingcc${props.uuid}`}>
+							<Typography key={`trainingtext1${props.uuid}`} sx={{ fontSize: ".95rem", opacity: 0.65, fontWeight: 450 }}>
+								{props.headerText}
+							</Typography>
+							<TrainingModuleVideo uuid={props.uuid} video={props.trainingVideo} />
+							<Typography key={`trainingtext2${props.uuid}`} sx={{ fontSize: ".75rem", opacity: 0.65, fontWeight: 450 }}>
+								{props.trainingText}
+							</Typography>
 						</CardContent>
-						<CardActions>
-							<Button onClick={() => exitTraining()}>Exit</Button>
-							<Button onClick={() => (props.finalStep ? exitTraining() : showNextDialog())}>{props.finalStep ? <>Finish</> : <>Next</>}</Button>
+						<CardActions key={`trainingca${props.uuid}`}>
+							<Button key={`exitbutton${props.uuid}`} onClick={() => exitTraining()}>
+								Exit
+							</Button>
+							<Button key={`nextbutton${props.uuid}`} onClick={() => (props.finalStep ? exitTraining() : showNextDialog())}>
+								{props.finalStep ? <>Finish</> : <>Next</>}
+							</Button>
 						</CardActions>
 					</Card>
 				</div>

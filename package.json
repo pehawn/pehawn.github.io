@@ -40,7 +40,8 @@
 		"react-dom": "^18.1.0",
 		"react-helmet": "^6.1.0",
 		"sass": "^1.54.9",
-		"tone": "^14.7.39"
+		"tone": "^14.7.39",
+		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",

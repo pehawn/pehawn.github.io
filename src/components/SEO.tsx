@@ -1,5 +1,5 @@
 import React from "react";
-import { useSiteMetadata } from "../hooks/UseSiteMetadata";
+import useSiteMetadata from "../hooks/UseSiteMetadata";
 
 interface ISEOProps {
 	title?: string;
