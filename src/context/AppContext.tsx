@@ -420,23 +420,26 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		} else {
 			playerRef.current.playbackRate = 1;
 			tempAudio.Duration = playerRef.current.buffer.duration;
-
-			const timestampRatio: number = playerTimestamp / selectedAudio.Duration;
-			const updatedTimestamp: number = Math.round(timestampRatio * playerRef.current.buffer.duration);
-
-			Tone.Transport.clear(selectedAudio.CurrentTimestampEventId);
-			Tone.Transport.seconds = updatedTimestamp;
-			const currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
-				() => {
-					setPlayerTimestamp(Tone.TransportTime().toSeconds());
-				},
-				1,
-				updatedTimestamp,
-				tempAudio.Duration - updatedTimestamp
-			);
-			tempAudio.CurrentTimestampEventId = currentTimestampEventId;
-			setPlayerTimestamp(updatedTimestamp);
 		}
+
+		const updatedDuration: number = (tempoLevel / 1) * selectedAudio.Duration;
+		const timestampRatio: number = playerTimestamp / selectedAudio.Duration;
+		let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
+
+		Tone.Transport.clear(selectedAudio.CurrentTimestampEventId);
+		Tone.Transport.seconds = updatedTimestamp;
+
+		let currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
+			() => {
+				setPlayerTimestamp(Tone.TransportTime().toSeconds());
+			},
+			1,
+			updatedTimestamp,
+			updatedDuration - updatedTimestamp
+		);
+
+		tempAudio.CurrentTimestampEventId = currentTimestampEventId;
+		setPlayerTimestamp(updatedTimestamp);
 
 		setTempoLevel(1);
 		setVisualTempoLevel(1);
