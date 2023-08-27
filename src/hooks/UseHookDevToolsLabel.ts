@@ -12,6 +12,7 @@ const useReactHook = <T>(initialValue: T, name: string, hookType: string, env: s
 		case ReactHook.State:
 			const [value, setValue] = React.useState<T>(initialValue);
 			if (env === "DEV") {
+				console.log("DEV");
 				React.useDebugValue(`${name}: ${value}`);
 			}
 			return [value, setValue];
