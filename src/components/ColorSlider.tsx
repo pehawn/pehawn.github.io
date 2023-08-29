@@ -2,13 +2,16 @@ import * as React from "react";
 import { HuePicker } from "./colorPicker/HuePicker";
 import { AppContext } from "../context/AppContext";
 import { ISwatch } from "../types/ISwatch";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 const ColorSlider: React.FunctionComponent<any> = ({}): JSX.Element => {
+	const env: string = process.env.GATSBY_ENV;
+
 	const appContext = React.useContext(AppContext);
 
-	const [hueValues, setHueValues] = React.useState<number[]>([]);
-	const [selectedHueValue, setSelectedHueValue] = React.useState<number>(0);
-	const [selectedHexValue, setSelectedHexValue] = React.useState<string>("");
+	const [hueValues, setHueValues] = useDevHook<number[]>([], "hueValues", ReactHook.State, env);
+	const [selectedHueValue, setSelectedHueValue] = useDevHook<number>(0, "selectedHueValue", ReactHook.State, env);
+	const [selectedHexValue, setSelectedHexValue] = useDevHook<string>("", "selectedHexValue", ReactHook.State, env);
 
 	React.useEffect(() => {
 		let hueValues: number[] = [];

@@ -22,6 +22,7 @@ import DownloadsCallout from "./DownloadsCallout";
 import CommandBarPlayer from "./CommandBarPlayer";
 import LooperCallout from "./LooperCallout";
 import EffectsCallout from "./EffectsCallout";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const darkGreyTheme = createTheme({
@@ -47,6 +48,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	});
 
 	let isMobile = false;
+	const env: string = process.env.GATSBY_ENV;
 
 	if (typeof window !== "undefined") {
 		isMobile = window.innerWidth <= 768;
@@ -54,27 +56,27 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 
 	const appContext = React.useContext(AppContext);
 
-	const looperRef = React.useRef();
-	const effectsRef = React.useRef();
-	const profileRef = React.useRef();
-	const downloadsRef = React.useRef();
-	const trainingRef = React.useRef();
-	const trainingEffects = React.useRef();
-	const trainingStems = React.useRef();
-	const trainingRecord = React.useRef();
-	const trainingPlayerControls = React.useRef();
-	const trainingLooper = React.useRef();
+	const looperRef = useDevHook(null, "looperRef", ReactHook.Ref, env);
+	const effectsRef = useDevHook(null, "effectsRef", ReactHook.Ref, env);
+	const profileRef = useDevHook(null, "profileRef", ReactHook.Ref, env);
+	const downloadsRef = useDevHook(null, "downloadsRef", ReactHook.Ref, env);
+	const trainingRef = useDevHook(null, "trainingRef", ReactHook.Ref, env);
+	const trainingEffects = useDevHook(null, "trainingEffects", ReactHook.Ref, env);
+	const trainingStems = useDevHook(null, "trainingStems", ReactHook.Ref, env);
+	const trainingRecord = useDevHook(null, "trainingRecord", ReactHook.Ref, env);
+	const trainingPlayerControls = useDevHook(null, "trainingPlayerControls", ReactHook.Ref, env);
+	const trainingLooper = useDevHook(null, "trainingLooper", ReactHook.Ref, env);
 
-	const [recordTheme, setRecordTheme] = React.useState<any>(darkGreyTheme);
-	const [showLooperDialog, setShowLooperDialog] = React.useState<boolean>(false);
-	const [looperAnchorEl, setLooperAnchorEl] = React.useState();
-	const [showEffectsDialog, setShowEffectsDialog] = React.useState<boolean>(false);
-	const [effectsAnchorEl, setEffectsAnchorEl] = React.useState();
-	const [showProfileCallout, setShowProfileCallout] = React.useState<boolean>(false);
-	const [profileAnchorEl, setProfileAnchorEl] = React.useState();
-	const [showDownloadsCallout, setShowDownloadsCallout] = React.useState<boolean>(false);
-	const [downloadsAnchorEl, setDownloadsAnchorEl] = React.useState();
-	const [trainingAnchorEl, setTrainingAnchorEl] = React.useState(null);
+	const [recordTheme, setRecordTheme] = useDevHook<any>(darkGreyTheme, "recordTheme", ReactHook.State, env);
+	const [showLooperDialog, setShowLooperDialog] = useDevHook<boolean>(false, "showLooperDialog", ReactHook.State, env);
+	const [looperAnchorEl, setLooperAnchorEl] = useDevHook(null, "looperAnchor", ReactHook.State, env);
+	const [showEffectsDialog, setShowEffectsDialog] = useDevHook<boolean>(false, "showEffectsDialog", ReactHook.State, env);
+	const [effectsAnchorEl, setEffectsAnchorEl] = useDevHook(null, "effectsAnchor", ReactHook.State, env);
+	const [showProfileCallout, setShowProfileCallout] = useDevHook<boolean>(false, "showProfileCallout", ReactHook.State, env);
+	const [profileAnchorEl, setProfileAnchorEl] = useDevHook(null, "profileAnchor", ReactHook.State, env);
+	const [showDownloadsCallout, setShowDownloadsCallout] = useDevHook<boolean>(false, "showDownloadsCallout", ReactHook.State, env);
+	const [downloadsAnchorEl, setDownloadsAnchorEl] = useDevHook(null, "downloadsAnchor", ReactHook.State, env);
+	const [trainingAnchorEl, setTrainingAnchorEl] = useDevHook(null, "trainingAnchor", ReactHook.State, env);
 
 	React.useEffect(() => {
 		if (appContext.DisplayTrainingModules[1]) {

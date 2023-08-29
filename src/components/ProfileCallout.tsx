@@ -1,5 +1,5 @@
 import { IconButton, Popover, Stack, Typography, styled } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -10,7 +10,7 @@ interface IProfileCallout {
 	closeCallout();
 }
 
-const ProfileCallout: React.FunctionComponent<IProfileCallout> = ({ open, anchor, closeCallout }): JSX.Element => {
+let ProfileCallout: React.FunctionComponent<IProfileCallout> = ({ open, anchor, closeCallout }): JSX.Element => {
 	const ProfileDownloadsTinyText = styled(Typography)({
 		fontSize: ".8rem",
 		opacity: 0.7,
@@ -71,5 +71,7 @@ const ProfileCallout: React.FunctionComponent<IProfileCallout> = ({ open, anchor
 		</React.Fragment>
 	);
 };
+
+ProfileCallout = memo(ProfileCallout);
 
 export default ProfileCallout;

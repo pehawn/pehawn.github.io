@@ -5,11 +5,14 @@ import { AppContext } from "../context/AppContext";
 import { PlayArrowOutlined, PauseOutlined } from "@mui/icons-material";
 import { IAudio } from "../types/IAudio";
 import * as Tone from "tone";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 const SignaturePlayButton: React.FunctionComponent<any> = ({}): JSX.Element => {
+	const env: string = process.env.GATSBY_ENV;
+
 	const appContext = React.useContext(AppContext);
 
-	const [isPaused, setIsPaused] = React.useState<boolean>(true);
+	const [isPaused, setIsPaused] = useDevHook<boolean>(true, "isPaused", ReactHook.State, env);
 
 	const whiteTheme = createTheme({
 		palette: {

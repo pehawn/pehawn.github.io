@@ -11,6 +11,7 @@ import * as Tone from "tone";
 // @ts-ignore
 import TrainingStartOptions from "../assets/training/TrainingStartOptions.mp4";
 import TrainingModuleDialog from "./TrainingModuleDialog";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 interface ICardList {
 	audio: IAudio;
@@ -20,6 +21,7 @@ const uuid = uuidv4();
 
 const AudioCard: React.FunctionComponent<ICardList> = ({ audio }): JSX.Element => {
 	let isMobile = false;
+	const env: string = process.env.GATSBY_ENV;
 
 	if (typeof window !== "undefined") {
 		isMobile = window.innerWidth <= 768;
@@ -34,9 +36,9 @@ const AudioCard: React.FunctionComponent<ICardList> = ({ audio }): JSX.Element =
 
 	const { SelectedAudio, Player, UpdateSelectedAudio, DisplayTrainingModules, DisplayTutorialDialog } = React.useContext(AppContext);
 
-	const trainingStartAudio = React.useRef();
+	const trainingStartAudio = useDevHook(null, "trainingStartAudioRef", ReactHook.State, env);
 
-	const [trainingAnchorEl, setTrainingAnchorEl] = React.useState(null);
+	const [trainingAnchorEl, setTrainingAnchorEl] = useDevHook(null, "trainingAnchor", ReactHook.State, env);
 
 	React.useEffect(() => {
 		if (!DisplayTutorialDialog && SelectedAudio && DisplayTrainingModules.some((showModule) => showModule === true)) {
