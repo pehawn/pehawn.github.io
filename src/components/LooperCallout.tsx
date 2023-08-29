@@ -1,10 +1,11 @@
-import React from "react";
+import React, { memo } from "react";
 import { AppContext } from "../context/AppContext";
 import * as Tone from "tone";
 import { Button, Grid, IconButton, Popover } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CloseIcon from "@mui/icons-material/Close";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 interface ILooperCallout {
 	open: boolean;
@@ -12,14 +13,17 @@ interface ILooperCallout {
 	closeCallout();
 }
 
-const LooperCallout: React.FunctionComponent<ILooperCallout> = (props): JSX.Element => {
+let LooperCallout: React.FunctionComponent<ILooperCallout> = (props): JSX.Element => {
 	const { open, anchor, closeCallout } = props;
+
+	const env: string = process.env.GATSBY_ENV;
+
 	const { Player, PlayerTimestamp, SetPlayerTimestamp, TempoLevel, SelectedAudio } = React.useContext(AppContext);
 
-	const [startLoopEnabled, setStartLoopEnabled] = React.useState<boolean>(true);
-	const [endLoopEnabled, setEndLoopEnabled] = React.useState<boolean>(true);
-	const [startLoopTime, setStartLoopTime] = React.useState<number>(null);
-	const [endLoopTime, setEndLoopTime] = React.useState<number>(null);
+	const [startLoopEnabled, setStartLoopEnabled] = useDevHook<boolean>(true, "startLoopEnabled", ReactHook.State, env);
+	const [endLoopEnabled, setEndLoopEnabled] = useDevHook<boolean>(true, "endLoopEnabled", ReactHook.State, env);
+	const [startLoopTime, setStartLoopTime] = useDevHook<number>(null, "startLoopTime", ReactHook.State, env);
+	const [endLoopTime, setEndLoopTime] = useDevHook<number>(null, "endLoopTime", ReactHook.State, env);
 
 	React.useEffect(() => {
 		if (!startLoopEnabled && !endLoopEnabled) {
@@ -221,5 +225,7 @@ const LooperCallout: React.FunctionComponent<ILooperCallout> = (props): JSX.Elem
 		</React.Fragment>
 	);
 };
+
+LooperCallout = memo(LooperCallout);
 
 export default LooperCallout;

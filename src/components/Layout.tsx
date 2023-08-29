@@ -10,6 +10,7 @@ import Signature from "./Signature";
 import SignaturePlayButton from "./SignaturePlayButton";
 import CardList from "./CardList";
 import { TouchRippleActions } from "@mui/material/ButtonBase/TouchRipple";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 // Contains Top Action Bar With About Link In Left Hand Corner,
 // Record (Voice Message Button) Right Hand Corner.  Background Color White.
@@ -19,11 +20,13 @@ import { TouchRippleActions } from "@mui/material/ButtonBase/TouchRipple";
 // Hue Slider in footer area... Footer area should be colored lightest of the swatches
 
 const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
-	const [showHomePage, setShowHomePage] = React.useState<boolean>(true);
-	const [showSwatchesList, setShowSwatchesList] = React.useState<boolean>(false);
-	const [scrollHeight, setScrollHeight] = React.useState<number>(100);
+	const env: string = process.env.GATSBY_ENV;
 
-	const touchRippleRef = useRef<TouchRippleActions>(null);
+	const [showHomePage, setShowHomePage] = useDevHook<boolean>(true, "showHomePage", ReactHook.State, env);
+	const [showSwatchesList, setShowSwatchesList] = useDevHook<boolean>(false, "showSwatchesList", ReactHook.State, env);
+	const [scrollHeight, setScrollHeight] = useDevHook<number>(100, "scrollHeight", ReactHook.State, env);
+
+	const touchRippleRef = useDevHook<TouchRippleActions>(null, "touchRipple", ReactHook.Ref, env);
 
 	React.useEffect(() => {
 		let timer = setTimeout(() => touchRippleRef.current?.pulsate(), 10000);

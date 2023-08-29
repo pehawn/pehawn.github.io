@@ -8,6 +8,7 @@ import Forward10RoundedIcon from "@mui/icons-material/Forward10Rounded";
 import Replay10RoundedIcon from "@mui/icons-material/Replay10Rounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CloseIcon from "@mui/icons-material/Close";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 interface IPlayerControlsCallout {
 	open: boolean;
@@ -17,9 +18,12 @@ interface IPlayerControlsCallout {
 
 const PlayerControlsCallout: React.FunctionComponent<IPlayerControlsCallout> = (props): JSX.Element => {
 	const { open, anchor, closeCallout } = props;
+
+	const env: string = process.env.GATSBY_ENV;
+
 	const { Player, PlayerTimestamp, SetPlayerTimestamp, SelectedAudio, SetSelectedAudio } = React.useContext(AppContext);
 
-	const [isPaused, setIsPaused] = React.useState<boolean>(false);
+	const [isPaused, setIsPaused] = useDevHook<boolean>(false, "isPaused", ReactHook.State, env);
 
 	const jumpToPosition = (seconds: number): void => {
 		Tone.Transport.clear(SelectedAudio.CurrentTimestampEventId);

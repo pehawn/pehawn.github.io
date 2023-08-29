@@ -1,5 +1,5 @@
 import { Grid, IconButton, Popover, Typography, styled } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CloseIcon from "@mui/icons-material/Close";
 import { AppContext } from "../context/AppContext";
@@ -10,7 +10,7 @@ interface IDownloadsCallout {
 	closeCallout();
 }
 
-const DownloadsCallout: React.FunctionComponent<IDownloadsCallout> = ({ open, anchor, closeCallout }): JSX.Element => {
+let DownloadsCallout: React.FunctionComponent<IDownloadsCallout> = ({ open, anchor, closeCallout }): JSX.Element => {
 	const { Downloads } = React.useContext(AppContext);
 
 	const ProfileDownloadsTinyText = styled(Typography)({
@@ -74,5 +74,7 @@ const DownloadsCallout: React.FunctionComponent<IDownloadsCallout> = ({ open, an
 		</React.Fragment>
 	);
 };
+
+DownloadsCallout = memo(DownloadsCallout);
 
 export default DownloadsCallout;

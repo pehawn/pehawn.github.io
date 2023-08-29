@@ -4,7 +4,7 @@ import { IAudio } from "../types/IAudio";
 import { ISwatch } from "../types/ISwatch";
 import { getImage } from "gatsby-plugin-image";
 import { HexToHSL } from "../components/colorPicker/Helpers";
-import useReactHook, { ReactHook } from "../hooks/UseHookDevToolsLabel";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 export interface IAppContextProps {
 	children: React.ReactNode;
@@ -86,38 +86,38 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	const env: string = process.env.GATSBY_ENV;
 
 	// State objects
-	const [swatches, setSwatches] = useReactHook<ISwatch[]>([], "swatches", ReactHook.State, env);
-	const [selectedSwatch, setSelectedSwatch] = useReactHook<ISwatch>(null, "selectedSwatch", ReactHook.State, env);
-	const [updateSwatch, setUpdateSwatch] = useReactHook<boolean>(true, "updateSwatch", ReactHook.State, env);
-	const [selectedAudio, setSelectedAudio] = useReactHook<IAudio>(null, "selectedAudio", ReactHook.State, env);
-	const [distortionEffect, setDistortionEffect] = useReactHook(null, "distortionEffect", ReactHook.State, env);
-	const [distortionLevel, setDistortionLevel] = useReactHook<number>(0, "distortionLevel", ReactHook.State, env);
-	const [feedbackDelayEffect, setFeedbackDelayEffect] = useReactHook(null, "feedbackDelayEffect", ReactHook.State, env);
-	const [feedbackDelayLevel, setFeedbackDelayLevel] = useReactHook<number>(0, "feedbackDelayLevel", ReactHook.State, env);
-	const [chorusEffect, setChorusEffect] = useReactHook(null, "chorusEffect", ReactHook.State, env);
-	const [chorusLevel, setChorusLevel] = useReactHook<number>(0, "chorusLevel", ReactHook.State, env);
-	const [vibratoEffect, setVibratoEffect] = useReactHook(null, "vibratoEffect", ReactHook.State, env);
-	const [vibratoLevel, setVibratoLevel] = useReactHook<number>(0, "vibratoLevel", ReactHook.State, env);
-	const [lowPassFilterEffect, setLowPassFilterEffect] = useReactHook(null, "lowPassFilterEffect", ReactHook.State, env);
-	const [lowPassFilterLevel, setLowPassFilterLevel] = useReactHook<number>(0, "lowPassFilterLevel", ReactHook.State, env);
-	const [reverbEffect, setReverbEffect] = useReactHook(null, "reverbEffect", ReactHook.State, env);
-	const [reverbLevel, setReverbLevel] = useReactHook<number>(0, "reverbLevel", ReactHook.State, env);
-	const [phaserEffect, setPhaserEffect] = useReactHook(null, "phaserEffect", ReactHook.State, env);
-	const [phaserLevel, setPhaserLevel] = useReactHook<number>(0, "phaserLevel", ReactHook.State, env);
-	const [pitchEffect, setPitchEffect] = useReactHook(null, "pitchEffect", ReactHook.State, env);
-	const [pitchLevel, setPitchLevel] = useReactHook<number>(0, "pitchLevel", ReactHook.State, env);
+	const [swatches, setSwatches] = useDevHook<ISwatch[]>([], "swatches", ReactHook.State, env);
+	const [selectedSwatch, setSelectedSwatch] = useDevHook<ISwatch>(null, "selectedSwatch", ReactHook.State, env);
+	const [updateSwatch, setUpdateSwatch] = useDevHook<boolean>(true, "updateSwatch", ReactHook.State, env);
+	const [selectedAudio, setSelectedAudio] = useDevHook<IAudio>(null, "selectedAudio", ReactHook.State, env);
+	const [distortionEffect, setDistortionEffect] = useDevHook(null, "distortionEffect", ReactHook.State, env);
+	const [distortionLevel, setDistortionLevel] = useDevHook<number>(0, "distortionLevel", ReactHook.State, env);
+	const [feedbackDelayEffect, setFeedbackDelayEffect] = useDevHook(null, "feedbackDelayEffect", ReactHook.State, env);
+	const [feedbackDelayLevel, setFeedbackDelayLevel] = useDevHook<number>(0, "feedbackDelayLevel", ReactHook.State, env);
+	const [chorusEffect, setChorusEffect] = useDevHook(null, "chorusEffect", ReactHook.State, env);
+	const [chorusLevel, setChorusLevel] = useDevHook<number>(0, "chorusLevel", ReactHook.State, env);
+	const [vibratoEffect, setVibratoEffect] = useDevHook(null, "vibratoEffect", ReactHook.State, env);
+	const [vibratoLevel, setVibratoLevel] = useDevHook<number>(0, "vibratoLevel", ReactHook.State, env);
+	const [lowPassFilterEffect, setLowPassFilterEffect] = useDevHook(null, "lowPassFilterEffect", ReactHook.State, env);
+	const [lowPassFilterLevel, setLowPassFilterLevel] = useDevHook<number>(0, "lowPassFilterLevel", ReactHook.State, env);
+	const [reverbEffect, setReverbEffect] = useDevHook(null, "reverbEffect", ReactHook.State, env);
+	const [reverbLevel, setReverbLevel] = useDevHook<number>(0, "reverbLevel", ReactHook.State, env);
+	const [phaserEffect, setPhaserEffect] = useDevHook(null, "phaserEffect", ReactHook.State, env);
+	const [phaserLevel, setPhaserLevel] = useDevHook<number>(0, "phaserLevel", ReactHook.State, env);
+	const [pitchEffect, setPitchEffect] = useDevHook(null, "pitchEffect", ReactHook.State, env);
+	const [pitchLevel, setPitchLevel] = useDevHook<number>(0, "pitchLevel", ReactHook.State, env);
 	// Used to display tempo level to user but not used for calculations when determining duration
-	const [visualTempoLevel, setVisualTempoLevel] = useReactHook<number>(1, "visualTempoLevel", ReactHook.State, env);
-	const [tempoLevel, setTempoLevel] = useReactHook<number>(1, "tempoLevel", ReactHook.State, env);
-	const [playerTimestamp, setPlayerTimestamp] = useReactHook<number>(null, "playerTimestamp", ReactHook.State, env);
-	const [displayTutorialDialog, setDisplayTutorialDialog] = useReactHook<boolean>(true, "displayTutorialDialog", ReactHook.State, env);
-	const [displayTrainingModules, setDisplayTrainingModules] = useReactHook<boolean[]>([false, false, false, false, false, false], "displayTrainingModules", ReactHook.State, env);
-	const [tracks, setTracks] = useReactHook<IAudio[]>([], "tracks", ReactHook.State, env);
-	const [downloads, setDownloads] = useReactHook<string[]>([], "downloads", ReactHook.State, env);
+	const [visualTempoLevel, setVisualTempoLevel] = useDevHook<number>(1, "visualTempoLevel", ReactHook.State, env);
+	const [tempoLevel, setTempoLevel] = useDevHook<number>(1, "tempoLevel", ReactHook.State, env);
+	const [playerTimestamp, setPlayerTimestamp] = useDevHook<number>(null, "playerTimestamp", ReactHook.State, env);
+	const [displayTutorialDialog, setDisplayTutorialDialog] = useDevHook<boolean>(true, "displayTutorialDialog", ReactHook.State, env);
+	const [displayTrainingModules, setDisplayTrainingModules] = useDevHook<boolean[]>([false, false, false, false, false, false], "displayTrainingModules", ReactHook.State, env);
+	const [tracks, setTracks] = useDevHook<IAudio[]>([], "tracks", ReactHook.State, env);
+	const [downloads, setDownloads] = useDevHook<string[]>([], "downloads", ReactHook.State, env);
 
 	// Ref Objects
-	const playerRef = useReactHook(null, "playerRef", ReactHook.Ref, env);
-	const recorderRef = useReactHook(null, "recorderRef", ReactHook.Ref, env);
+	const playerRef = useDevHook(null, "playerRef", ReactHook.Ref, env);
+	const recorderRef = useDevHook(null, "recorderRef", ReactHook.Ref, env);
 
 	const setData = async (): Promise<void> => {
 		if (props.graphQlData.allMdx.nodes) {

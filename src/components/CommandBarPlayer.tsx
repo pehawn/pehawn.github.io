@@ -11,6 +11,7 @@ import TrainingModuleDialog from "./TrainingModuleDialog";
 import TrainingPlayerControls from "../assets/training/TrainingPlayerControls.mp4";
 // @ts-ignore
 import TrainingStems from "../assets/training/TrainingStems.mp4";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 
 interface ICommandBarPlayer {
 	isMobile: boolean;
@@ -18,18 +19,21 @@ interface ICommandBarPlayer {
 
 const CommandBarPlayer: React.FunctionComponent<ICommandBarPlayer> = (props): JSX.Element => {
 	const { isMobile } = props;
+
+	const env: string = process.env.GATSBY_ENV;
+
 	const { SelectedAudio, PlayerTimestamp, DisplayTrainingModules } = React.useContext(AppContext);
 
-	const playerControlsRef = React.useRef();
-	const stemsRef = React.useRef();
-	const trainingStems = React.useRef();
-	const trainingPlayerControls = React.useRef();
+	const playerControlsRef = useDevHook(null, "playerControlsRef", ReactHook.Ref, env);
+	const stemsRef = useDevHook(null, "stemsRef", ReactHook.Ref, env);
+	const trainingStems = useDevHook(null, "trainingStems", ReactHook.Ref, env);
+	const trainingPlayerControls = useDevHook(null, "trainingPlayerControls", ReactHook.Ref, env);
 
-	const [showStemsDialog, setShowStemsDialog] = React.useState<boolean>(false);
-	const [stemsAnchorEl, setStemsAnchorEl] = React.useState();
-	const [showPlayerControlsDialog, setShowPlayerControlsDialog] = React.useState<boolean>(false);
-	const [playerControlsAnchorEl, setPlayerControlsAnchorEl] = React.useState();
-	const [trainingAnchorEl, setTrainingAnchorEl] = React.useState(null);
+	const [showStemsDialog, setShowStemsDialog] = useDevHook<boolean>(false, "showStemsDialog", ReactHook.State, env);
+	const [stemsAnchorEl, setStemsAnchorEl] = useDevHook(null, "stemsAnchor", ReactHook.State, env);
+	const [showPlayerControlsDialog, setShowPlayerControlsDialog] = useDevHook<boolean>(false, "showPlayerControls", ReactHook.State, env);
+	const [playerControlsAnchorEl, setPlayerControlsAnchorEl] = useDevHook(null, "playerControlsAnchor", ReactHook.State, env);
+	const [trainingAnchorEl, setTrainingAnchorEl] = useDevHook(null, "trainingAnchor", ReactHook.State, env);
 
 	const theme = useTheme();
 

@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, Popover, Typography } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import TrainingModuleVideo from "./TrainingModuleVideo";
 import * as Tone from "tone";
 import { AppContext } from "../context/AppContext";
@@ -16,7 +16,7 @@ interface ITrainingModuleDialog {
 	closeDialog(): void;
 }
 
-const TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (props): JSX.Element => {
+let TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (props): JSX.Element => {
 	const { SelectedAudio, SetSelectedAudio, DisplayTrainingModules, SetDisplayTrainingModules, Player } = React.useContext(AppContext);
 
 	const showNextDialog = (): void => {
@@ -117,5 +117,7 @@ const TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (pr
 		</Popover>
 	);
 };
+
+TrainingModuleDialog = memo(TrainingModuleDialog);
 
 export default TrainingModuleDialog;

@@ -1,5 +1,5 @@
 import { IconButton, Popover, Slider, Stack, ThemeProvider, createTheme } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import * as Tone from "tone";
 import { AppContext } from "../context/AppContext";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -21,7 +21,7 @@ interface IEffectsCallout {
 	closeCallout();
 }
 
-const EffectsCallout: React.FunctionComponent<IEffectsCallout> = (props): JSX.Element => {
+let EffectsCallout: React.FunctionComponent<IEffectsCallout> = (props): JSX.Element => {
 	const { open, anchor, closeCallout } = props;
 	const { PlayerTimestamp, SetPlayerTimestamp, SelectedAudio, SetSelectedAudio, ResetToDefaults, DistortionLevel, HandleDistortionLevel, VisualTempoLevel, HandleTempoLevel, PitchLevel, HandlePitchLevel, FeedbackDelayLevel, HandleFeedbackDelayLevel, ChorusLevel, HandleChorusLevel, VibratoLevel, HandleVibratoLevel, LowPassFilterLevel, HandleLowPassFilterLevel, ReverbLevel, HandleReverbLevel, PhaserLevel, HandlePhaserLevel, TempoLevel, SetTempoLevel } = React.useContext(AppContext);
 
@@ -384,5 +384,7 @@ const EffectsCallout: React.FunctionComponent<IEffectsCallout> = (props): JSX.El
 		</React.Fragment>
 	);
 };
+
+EffectsCallout = memo(EffectsCallout);
 
 export default EffectsCallout;
