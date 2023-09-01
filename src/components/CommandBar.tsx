@@ -10,6 +10,7 @@ import { AppContext } from "../context/AppContext";
 import * as Tone from "tone";
 import { IAudio } from "../types/IAudio";
 import SchoolIcon from "@mui/icons-material/School";
+import useDevHook, { ReactHook } from "../hooks/UseDevHook";
 import TrainingModuleDialog from "./TrainingModuleDialog";
 // @ts-ignore
 import TrainingEffects from "../assets/training/TrainingEffects.mp4";
@@ -17,12 +18,12 @@ import TrainingEffects from "../assets/training/TrainingEffects.mp4";
 import TrainingLooper from "../assets/training/TrainingLooper.mp4";
 // @ts-ignore
 import TrainingRecord from "../assets/training/TrainingRecord.mp4";
-import ProfileCallout from "./ProfileCallout";
-import DownloadsCallout from "./DownloadsCallout";
-import CommandBarPlayer from "./CommandBarPlayer";
-import LooperCallout from "./LooperCallout";
-import EffectsCallout from "./EffectsCallout";
-import useDevHook, { ReactHook } from "../hooks/UseDevHook";
+
+const ProfileCallout = React.lazy(() => import("./ProfileCallout"));
+const DownloadsCallout = React.lazy(() => import("./DownloadsCallout"));
+const CommandBarPlayer = React.lazy(() => import("./CommandBarPlayer"));
+const LooperCallout = React.lazy(() => import("./LooperCallout"));
+const EffectsCallout = React.lazy(() => import("./EffectsCallout"));
 
 const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	const darkGreyTheme = createTheme({
@@ -116,10 +117,28 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 	};
 
 	const renderTrainingModules = async (): Promise<void> => {
+		if (appContext.SelectedAudio) {
+			Tone.Transport.stop();
+			if (appContext.SelectedAudio.CurrentTimestampEventId) {
+				Tone.Transport.clear(appContext.SelectedAudio.CurrentTimestampEventId);
+			}
+
+			if (appContext.SelectedAudio.Stems.length > 0) {
+				appContext.SelectedAudio.Stems.forEach((stem) => {
+					appContext.Player.current.player(stem.Name).unsync();
+					appContext.Player.current.player(stem.Name).dispose();
+				});
+			} else {
+				appContext.Player.current.unsync();
+				appContext.Player.current.dispose();
+			}
+		}
+
 		let titleSong: IAudio = appContext.Tracks.find((track: IAudio) => track.Name === "INTROVERT");
 		titleSong.Reversed = false;
 
-		await appContext.UpdateSelectedAudio(titleSong, false);
+		appContext.SetSelectedAudio(titleSong);
+		appContext.SetPlayerTimestamp(null);
 
 		let displayTrainingModules: boolean[] = appContext.DisplayTrainingModules?.slice();
 		displayTrainingModules[0] = true;
@@ -157,7 +176,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 			);
 		}
 
-		if (!isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") {
+		if ((!isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") || appContext.DisplayTrainingModules.find((display) => display === true)) {
 			return (
 				<React.Fragment>
 					<div
@@ -169,7 +188,9 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							marginTop: "10px"
 						}}
 					>
-						<CommandBarPlayer isMobile={isMobile} />
+						<React.Suspense>
+							<CommandBarPlayer isMobile={isMobile} />
+						</React.Suspense>
 					</div>
 				</React.Fragment>
 			);
@@ -243,7 +264,9 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							marginTop: "10px"
 						}}
 					>
-						<CommandBarPlayer isMobile={isMobile} />
+						<React.Suspense>
+							<CommandBarPlayer isMobile={isMobile} />
+						</React.Suspense>
 					</div>
 				</div>
 			);
@@ -351,14 +374,16 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							>
 								<PersonIcon></PersonIcon>
 							</IconButton>
-							<ProfileCallout
-								open={showProfileCallout}
-								anchor={profileAnchorEl}
-								closeCallout={() => {
-									setShowProfileCallout(false);
-									setProfileAnchorEl(null);
-								}}
-							/>
+							<React.Suspense>
+								<ProfileCallout
+									open={showProfileCallout}
+									anchor={profileAnchorEl}
+									closeCallout={() => {
+										setShowProfileCallout(false);
+										setProfileAnchorEl(null);
+									}}
+								/>
+							</React.Suspense>
 						</ThemeProvider>
 					</span>
 					<span ref={downloadsRef}>
@@ -375,14 +400,16 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							>
 								<FolderOpenIcon></FolderOpenIcon>
 							</IconButton>
-							<DownloadsCallout
-								open={showDownloadsCallout}
-								anchor={downloadsAnchorEl}
-								closeCallout={() => {
-									setShowDownloadsCallout(false);
-									setDownloadsAnchorEl(null);
-								}}
-							/>
+							<React.Suspense>
+								<DownloadsCallout
+									open={showDownloadsCallout}
+									anchor={downloadsAnchorEl}
+									closeCallout={() => {
+										setShowDownloadsCallout(false);
+										setDownloadsAnchorEl(null);
+									}}
+								/>
+							</React.Suspense>
 						</ThemeProvider>
 					</span>
 					<span ref={trainingRef}>
@@ -427,14 +454,16 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							>
 								<LoopIcon></LoopIcon>
 							</IconButton>
-							<LooperCallout
-								open={showLooperDialog}
-								anchor={looperAnchorEl}
-								closeCallout={() => {
-									setShowLooperDialog(false);
-									setLooperAnchorEl(null);
-								}}
-							/>
+							<React.Suspense>
+								<LooperCallout
+									open={showLooperDialog}
+									anchor={looperAnchorEl}
+									closeCallout={() => {
+										setShowLooperDialog(false);
+										setLooperAnchorEl(null);
+									}}
+								/>
+							</React.Suspense>
 						</ThemeProvider>
 					</span>
 					{renderPlayerTrainingEffects()}
@@ -452,14 +481,16 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 							>
 								<TuneIcon></TuneIcon>
 							</IconButton>
-							<EffectsCallout
-								open={showEffectsDialog}
-								anchor={effectsAnchorEl}
-								closeCallout={() => {
-									setShowEffectsDialog(false);
-									setEffectsAnchorEl(null);
-								}}
-							/>
+							<React.Suspense>
+								<EffectsCallout
+									open={showEffectsDialog}
+									anchor={effectsAnchorEl}
+									closeCallout={() => {
+										setShowEffectsDialog(false);
+										setEffectsAnchorEl(null);
+									}}
+								/>
+							</React.Suspense>
 						</ThemeProvider>
 					</span>
 					<ThemeProvider theme={recordTheme}>

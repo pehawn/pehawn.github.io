@@ -110,7 +110,7 @@ const StemsCallout: React.FunctionComponent<IStemsCallout> = (props): JSX.Elemen
 		return stemSliders;
 	};
 
-	if (Player.current.loaded) {
+	if (Player.current?.loaded) {
 		return (
 			<Popover
 				open={open}

@@ -133,7 +133,7 @@ const PlayerControlsCallout: React.FunctionComponent<IPlayerControlsCallout> = (
 		);
 	};
 
-	if (Player.current.loaded) {
+	if (Player.current?.loaded) {
 		return (
 			<Popover
 				open={open}

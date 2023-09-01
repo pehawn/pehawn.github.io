@@ -36,7 +36,7 @@ const AudioCard: React.FunctionComponent<ICardList> = ({ audio }): JSX.Element =
 
 	const { SelectedAudio, Player, UpdateSelectedAudio, DisplayTrainingModules, DisplayTutorialDialog } = React.useContext(AppContext);
 
-	const trainingStartAudio = useDevHook(null, "trainingStartAudioRef", ReactHook.State, env);
+	const trainingStartAudio = useDevHook(null, "trainingStartAudioRef", ReactHook.Ref, env);
 
 	const [trainingAnchorEl, setTrainingAnchorEl] = useDevHook(null, "trainingAnchor", ReactHook.State, env);
 
