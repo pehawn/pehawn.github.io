@@ -226,6 +226,4 @@ let LooperCallout: React.FunctionComponent<ILooperCallout> = (props): JSX.Elemen
 	);
 };
 
-LooperCallout = memo(LooperCallout);
-
 export default LooperCallout;

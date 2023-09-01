@@ -29,26 +29,6 @@ let TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (prop
 	};
 
 	const exitTraining = (): void => {
-		// Clean up audio example loaded in background
-		Tone.Transport.stop();
-		if (SelectedAudio.CurrentTimestampEventId) {
-			Tone.Transport.clear(SelectedAudio.CurrentTimestampEventId);
-		}
-
-		if (Tone.Transport.state === "paused") {
-			Tone.Transport.start();
-		}
-
-		if (SelectedAudio.Stems.length > 0) {
-			SelectedAudio.Stems.forEach((stem) => {
-				Player.current.player(stem.Name).unsync();
-				Player.current.player(stem.Name).dispose();
-			});
-		} else {
-			Player.current.unsync();
-			Player.current.dispose();
-		}
-
 		SetSelectedAudio(null);
 		SetDisplayTrainingModules([false, false, false, false, false, false]);
 
@@ -117,7 +97,5 @@ let TrainingModuleDialog: React.FunctionComponent<ITrainingModuleDialog> = (prop
 		</Popover>
 	);
 };
-
-TrainingModuleDialog = memo(TrainingModuleDialog);
 
 export default TrainingModuleDialog;

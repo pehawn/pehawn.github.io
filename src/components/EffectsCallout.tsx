@@ -385,6 +385,4 @@ let EffectsCallout: React.FunctionComponent<IEffectsCallout> = (props): JSX.Elem
 	);
 };
 
-EffectsCallout = memo(EffectsCallout);
-
 export default EffectsCallout;

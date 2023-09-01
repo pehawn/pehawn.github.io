@@ -4,14 +4,15 @@ import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposi
 import RadioIcon from "@mui/icons-material/Radio";
 import { AppContext } from "../context/AppContext";
 import * as Tone from "tone";
-import PlayerControlsCallout from "./PlayerControlsCallout";
-import StemsCallout from "./StemsCallout";
 import TrainingModuleDialog from "./TrainingModuleDialog";
 // @ts-ignore
 import TrainingPlayerControls from "../assets/training/TrainingPlayerControls.mp4";
 // @ts-ignore
 import TrainingStems from "../assets/training/TrainingStems.mp4";
 import useDevHook, { ReactHook } from "../hooks/UseDevHook";
+
+const PlayerControlsCallout = React.lazy(() => import("./PlayerControlsCallout"));
+const StemsCallout = React.lazy(() => import("./StemsCallout"));
 
 interface ICommandBarPlayer {
 	isMobile: boolean;
@@ -159,14 +160,18 @@ const CommandBarPlayer: React.FunctionComponent<ICommandBarPlayer> = (props): JS
 						>
 							<SettingsInputCompositeIcon></SettingsInputCompositeIcon>
 						</IconButton>
-						<StemsCallout
-							open={showStemsDialog}
-							anchor={stemsAnchorEl}
-							closeCallout={() => {
-								setShowStemsDialog(false);
-								setStemsAnchorEl(null);
-							}}
-						/>
+						<React.Suspense>
+							{!DisplayTrainingModules.find((displayModule) => displayModule === true) && (
+								<StemsCallout
+									open={showStemsDialog}
+									anchor={stemsAnchorEl}
+									closeCallout={() => {
+										setShowStemsDialog(false);
+										setStemsAnchorEl(null);
+									}}
+								/>
+							)}
+						</React.Suspense>
 					</ThemeProvider>
 				</span>
 				<div>
@@ -230,14 +235,18 @@ const CommandBarPlayer: React.FunctionComponent<ICommandBarPlayer> = (props): JS
 						>
 							<RadioIcon></RadioIcon>
 						</IconButton>
-						<PlayerControlsCallout
-							open={showPlayerControlsDialog}
-							anchor={playerControlsAnchorEl}
-							closeCallout={() => {
-								setShowPlayerControlsDialog(false);
-								setPlayerControlsAnchorEl(null);
-							}}
-						/>
+						<React.Suspense>
+							{!DisplayTrainingModules.find((displayModule) => displayModule === true) && (
+								<PlayerControlsCallout
+									open={showPlayerControlsDialog}
+									anchor={playerControlsAnchorEl}
+									closeCallout={() => {
+										setShowPlayerControlsDialog(false);
+										setPlayerControlsAnchorEl(null);
+									}}
+								/>
+							)}
+						</React.Suspense>
 					</ThemeProvider>
 				</span>
 				{renderPlayerTrainingPlayerControls()}

@@ -72,6 +72,4 @@ let ProfileCallout: React.FunctionComponent<IProfileCallout> = ({ open, anchor, 
 	);
 };
 
-ProfileCallout = memo(ProfileCallout);
-
 export default ProfileCallout;

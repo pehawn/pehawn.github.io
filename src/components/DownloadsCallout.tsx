@@ -75,6 +75,4 @@ let DownloadsCallout: React.FunctionComponent<IDownloadsCallout> = ({ open, anch
 	);
 };
 
-DownloadsCallout = memo(DownloadsCallout);
-
 export default DownloadsCallout;
