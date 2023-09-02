@@ -176,7 +176,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 			);
 		}
 
-		if ((!isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") || appContext.DisplayTrainingModules.find((display) => display === true)) {
+		if ((!isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") || (!isMobile && appContext.DisplayTrainingModules.find((display) => display === true))) {
 			return (
 				<React.Fragment>
 					<div
@@ -241,7 +241,7 @@ const CommandBar: React.FunctionComponent<any> = ({}): JSX.Element => {
 			);
 		}
 
-		if (isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") {
+		if ((isMobile && appContext.SelectedAudio && Tone.Transport.state !== "stopped") || (isMobile && appContext.DisplayTrainingModules.find((display) => display === true))) {
 			return (
 				<div
 					style={{
