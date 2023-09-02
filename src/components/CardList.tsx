@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import "@fontsource-variable/cinzel";
 import { Helmet } from "react-helmet";
 import AudioCard from "./AudioCard";
+import * as Tone from "tone";
 
 interface IAudioCardList {
 	setScrollHeight(scrollHeight: number): void;
@@ -25,13 +26,30 @@ const CardList: React.FunctionComponent<IAudioCardList> = (props): JSX.Element =
 	const renderTrainingModules = async (): Promise<void> => {
 		localStorage.setItem("ShowTutorial", JSON.stringify(false));
 
+		if (appContext.SelectedAudio) {
+			Tone.Transport.stop();
+			if (appContext.SelectedAudio.CurrentTimestampEventId) {
+				Tone.Transport.clear(appContext.SelectedAudio.CurrentTimestampEventId);
+			}
+
+			if (appContext.SelectedAudio.Stems.length > 0) {
+				appContext.SelectedAudio.Stems.forEach((stem) => {
+					appContext.Player.current.player(stem.Name).unsync();
+					appContext.Player.current.player(stem.Name).dispose();
+				});
+			} else {
+				appContext.Player.current.unsync();
+				appContext.Player.current.dispose();
+			}
+		}
+
 		let titleSong: IAudio = appContext.Tracks.find((track: IAudio) => track.Name === "INTROVERT");
 		titleSong.Reversed = false;
 
-		await appContext.UpdateSelectedAudio(titleSong, false);
+		appContext.SetSelectedAudio(titleSong);
+		appContext.SetPlayerTimestamp(null);
 
-		appContext.SetDisplayTutorialDialog(false);
-		let displayTrainingModules: boolean[] = appContext.DisplayTrainingModules.slice();
+		let displayTrainingModules: boolean[] = appContext.DisplayTrainingModules?.slice();
 		displayTrainingModules[0] = true;
 		appContext.SetDisplayTrainingModules(displayTrainingModules);
 	};
@@ -54,6 +72,7 @@ const CardList: React.FunctionComponent<IAudioCardList> = (props): JSX.Element =
 								style={{ fontSize: ".7rem", fontWeight: 600, letterSpacing: 0.2 }}
 								onClick={() => {
 									renderTrainingModules();
+									closeWelcomeDialog();
 								}}
 							>
 								Beam Me Up, Scotty
