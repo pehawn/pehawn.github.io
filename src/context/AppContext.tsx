@@ -110,7 +110,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	const [visualTempoLevel, setVisualTempoLevel] = useDevHook<number>(1, "visualTempoLevel", ReactHook.State, env);
 	const [tempoLevel, setTempoLevel] = useDevHook<number>(1, "tempoLevel", ReactHook.State, env);
 	const [playerTimestamp, setPlayerTimestamp] = useDevHook<number>(null, "playerTimestamp", ReactHook.State, env);
-	const [displayTutorialDialog, setDisplayTutorialDialog] = useDevHook<boolean>(true, "displayTutorialDialog", ReactHook.State, env);
+	const [displayTutorialDialog, setDisplayTutorialDialog] = useDevHook<boolean>(JSON.parse(localStorage.getItem("ShowTutorial")), "displayTutorialDialog", ReactHook.State, env);
 	const [displayTrainingModules, setDisplayTrainingModules] = useDevHook<boolean[]>([false, false, false, false, false, false], "displayTrainingModules", ReactHook.State, env);
 	const [tracks, setTracks] = useDevHook<IAudio[]>([], "tracks", ReactHook.State, env);
 	const [downloads, setDownloads] = useDevHook<string[]>([], "downloads", ReactHook.State, env);

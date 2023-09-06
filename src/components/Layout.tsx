@@ -88,7 +88,7 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 	`);
 
 	const renderSwatchesList = (): JSX.Element => {
-		if (showSwatchesList) {
+		if (showSwatchesList && !showHomePage) {
 			let totalHeight: string = scrollHeight + "svh";
 
 			return (
@@ -149,9 +149,15 @@ const Layout: React.FunctionComponent<any> = ({ children }): JSX.Element => {
 				<motion.div
 					drag={showHomePage ? "y" : false}
 					dragConstraints={{ bottom: 0, top: 0 }}
-					onDragStart={(ev, info) => setShowSwatchesList(true)}
+					onDragStart={(ev, info) => {
+						if (info.offset.y < 0) {
+							console.log(info.offset.y);
+							setShowSwatchesList(true);
+						}
+					}}
 					onDragEnd={(ev, info) => {
-						if (info.offset.y < 0 && Math.abs(info.offset.y) > window.screen.height / 3) {
+						if (info.offset.y < 0) {
+							console.log(info.offset.y);
 							setShowHomePage(false);
 						}
 					}}
