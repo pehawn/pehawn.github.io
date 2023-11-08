@@ -211,7 +211,26 @@ const AudioCard: React.FunctionComponent<ICardList> = ({ audio }): JSX.Element =
 		<React.Fragment>
 			<Grid item key={`grid${uuid}`} xs={1} sm={2} md={2}>
 				<Card key={`card${uuid}`} sx={{ display: "flex", height: "110px" }}>
-					<Divider key={`divider${uuid}`} orientation="vertical" sx={{ borderWidth: "5px", backgroundColor: SelectedAudio && SelectedAudio.Name === audio.Name && audio.CardColor ? audio.CardColor : "#bbbbbb" }}></Divider>
+					<Divider
+						key={`divider${uuid}`}
+						orientation="vertical"
+						sx={{
+							width: "10px",
+							background: `linear-gradient(0deg,
+								rgba(255, 0, 0, .5) 0%,
+								rgba(255, 154, 0, .5) 10%,
+								rgba(208, 222, 33, .5) 20%,
+								rgba(79, 220, 74, .5) 30%,
+								rgba(63, 218, 216, .5) 40%,
+								rgba(47, 201, 226, .5) 50%,
+								rgba(28, 127, 238, .5) 60%,
+								rgba(95, 21, 242, .5) 70%,
+								rgba(186, 12, 248, .5) 80%,
+								rgba(251, 7, 217, .5) 90%,
+								rgba(255, 0, 0, .5) 100%
+							)`
+						}}
+					></Divider>
 					<TinyText key={`tt${uuid}`} style={{ justifyContent: "center", writingMode: "vertical-lr", rotate: "180deg", display: "flex", alignItems: "left" }}>
 						{audio.Name}
 					</TinyText>
