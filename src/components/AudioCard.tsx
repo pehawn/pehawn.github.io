@@ -207,6 +207,30 @@ const AudioCard: React.FunctionComponent<ICardList> = ({ audio }): JSX.Element =
 		}
 	};
 
+	const getLinearGradient = (): string => {
+		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(audio.CardColor);
+		const rgb = result
+			? {
+					r: parseInt(result[1], 16),
+					g: parseInt(result[2], 16),
+					b: parseInt(result[3], 16)
+			  }
+			: null;
+
+		const r = SelectedAudio && SelectedAudio.Name === audio.Name && audio.CardColor ? rgb.r : "0";
+		const g = SelectedAudio && SelectedAudio.Name === audio.Name && audio.CardColor ? rgb.g : "0";
+		const b = SelectedAudio && SelectedAudio.Name === audio.Name && audio.CardColor ? rgb.b : "0";
+
+		const linearGradient: string = `linear-gradient(180deg,
+			rgba(${r}, ${g}, ${b}, .5) 0%,
+			rgba(${r}, ${g}, ${b}, .25) 50%,
+			rgba(${r}, ${g}, ${b}, .1) 75%,
+			rgba(255, 255, 255, .5) 100%
+		)`;
+
+		return linearGradient;
+	};
+
 	return (
 		<React.Fragment>
 			<Grid item key={`grid${uuid}`} xs={1} sm={2} md={2}>
@@ -216,19 +240,7 @@ const AudioCard: React.FunctionComponent<ICardList> = ({ audio }): JSX.Element =
 						orientation="vertical"
 						sx={{
 							width: "10px",
-							background: `linear-gradient(0deg,
-								rgba(255, 0, 0, .5) 0%,
-								rgba(255, 154, 0, .5) 10%,
-								rgba(208, 222, 33, .5) 20%,
-								rgba(79, 220, 74, .5) 30%,
-								rgba(63, 218, 216, .5) 40%,
-								rgba(47, 201, 226, .5) 50%,
-								rgba(28, 127, 238, .5) 60%,
-								rgba(95, 21, 242, .5) 70%,
-								rgba(186, 12, 248, .5) 80%,
-								rgba(251, 7, 217, .5) 90%,
-								rgba(255, 0, 0, .5) 100%
-							)`
+							background: getLinearGradient()
 						}}
 					></Divider>
 					<TinyText key={`tt${uuid}`} style={{ justifyContent: "center", writingMode: "vertical-lr", rotate: "180deg", display: "flex", alignItems: "left" }}>
