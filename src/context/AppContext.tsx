@@ -5,6 +5,7 @@ import { ISwatch } from "../types/ISwatch";
 import { getImage } from "gatsby-plugin-image";
 import { HexToHSL } from "../components/colorPicker/Helpers";
 import useDevHook, { ReactHook } from "../hooks/UseDevHook";
+import { IAlbum } from "../types/IAlbum";
 
 export interface IAppContextProps {
 	children: React.ReactNode;
@@ -18,8 +19,11 @@ export interface IAppContext {
 	SelectedSwatch: ISwatch;
 	UpdateSwatch: boolean;
 	SelectedAudio: IAudio;
+	Albums: IAlbum[];
 	Player: any;
 	Recorder: any;
+	Timestamp: any;
+	EndTimestamp: any;
 	DistortionLevel: number;
 	DistortionEffect: any;
 	FeedbackDelayLevel: number;
@@ -41,6 +45,7 @@ export interface IAppContext {
 	PlayerTimestamp: number;
 	DisplayTutorialDialog: boolean;
 	DisplayTrainingModules: boolean[];
+	IsPlaying: boolean;
 	SetTempoLevel(tempo: number): void;
 	SetSelectedSwatch(swatch: ISwatch): void;
 	SetUpdateSwatch(update: boolean): void;
@@ -48,19 +53,20 @@ export interface IAppContext {
 	SetSelectedAudio(audio: IAudio): void;
 	SetPlayerTimestamp(time: number): void;
 	UpdateSelectedAudio(audio: IAudio, randomizeEffects: boolean): void;
-	HandleDistortionLevel(event: Event, value: number, activeThumb: number): void;
-	HandleFeedbackDelayLevel(event: Event, value: number, activeThumb: number): void;
-	HandleChorusLevel(event: Event, value: number, activeThumb: number): void;
-	HandleVibratoLevel(event: Event, value: number, activeThumb: number): void;
-	HandleLowPassFilterLevel(event: Event, value: number, activeThumb: number): void;
-	HandleReverbLevel(event: Event, value: number, activeThumb: number): void;
-	HandlePhaserLevel(event: Event, value: number, activeThumb: number): void;
-	HandlePitchLevel(event: Event, value: number, activeThumb: number): void;
-	HandleTempoLevel(event: Event, value: number, activeThumb: number): void;
+	HandleDistortionLevel(event: Event, value: number): void;
+	HandleFeedbackDelayLevel(event: Event, value: number): void;
+	HandleChorusLevel(event: Event, value: number): void;
+	HandleVibratoLevel(event: Event, value: number): void;
+	HandleLowPassFilterLevel(event: Event, value: number): void;
+	HandleReverbLevel(event: Event, value: number): void;
+	HandlePhaserLevel(event: Event, value: number): void;
+	HandlePitchLevel(event: Event, value: number): void;
+	HandleTempoLevel(event: Event, value: number): void;
 	ResetToDefaults(): void;
 	ResetVolumeLevels(): void;
 	SetDisplayTutorialDialog(displayTutorialDialog: boolean): void;
 	SetDisplayTrainingModules(displayTrainingModules: boolean[]): void;
+	SetIsPlaying(isPlaying: boolean): void;
 }
 
 export const AppContext = React.createContext<IAppContext>(undefined);
@@ -116,39 +122,62 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	const [displayTrainingModules, setDisplayTrainingModules] = useDevHook<boolean[]>([false, false, false, false, false, false], "displayTrainingModules", ReactHook.State, env);
 	const [tracks, setTracks] = useDevHook<IAudio[]>([], "tracks", ReactHook.State, env);
 	const [downloads, setDownloads] = useDevHook<string[]>([], "downloads", ReactHook.State, env);
+	const [albums, setAlbums] = useDevHook<IAlbum[]>([], "albums", ReactHook.State, env);
+	const [isPlaying, setIsPlaying] = useDevHook<boolean>(false, "isPlaying", ReactHook.State, env);
 
 	// Ref Objects
 	const playerRef = useDevHook(null, "playerRef", ReactHook.Ref, env);
 	const recorderRef = useDevHook(null, "recorderRef", ReactHook.Ref, env);
+	const timestampEventRef = React.useRef<number | null>(null);
+	const endEventRef = React.useRef<number | null>(null);
 
 	const setData = async (): Promise<void> => {
 		if (props.graphQlData.allMdx.nodes) {
 			let foundTracks: IAudio[] = [];
 			let foundDownloads: string[] = [];
+			let foundAlbums: IAlbum[] = [];
 
 			for (const data of props.graphQlData.allMdx.nodes) {
 				if (data.frontmatter.audio.filter((t) => t.dir.includes("downloads")).length > 0) {
 					foundDownloads.push(data.frontmatter.audio[0].publicURL);
 				} else {
-					const audio = data.frontmatter.audio.filter((t) => !t.publicURL.includes("Stems"))[0];
-					let albumArt = getImage(data.frontmatter.featuredImage?.childImageSharp?.gatsbyImageData);
-					let cardColor: string = null;
+					const audio = data?.frontmatter?.audio.filter((t) => !t.publicURL.includes("Stems"))[0];
+					const imageNode = props.graphQlData.allFile.nodes.find(
+						(f) => f.name.replaceAll("_", " ").toLowerCase() === data.frontmatter?.album?.toLowerCase()
+					);
 
-					cardColor = data.frontmatter?.albumArtColor;
+					let albumArt = getImage(imageNode?.childImageSharp);
 
 					let foundAudio: IAudio = {
 						Name: audio.name,
-						FullName: data.frontmatter.title,
+						FullName: data?.frontmatter?.title,
 						Path: audio.publicURL,
-						AlbumArt: albumArt,
-						CardColor: cardColor,
 						Stems: [],
-						Order: data.frontmatter.order
+						Order: data?.frontmatter?.order,
+						Duration: data?.frontmatter?.duration
 					};
 
-					for (const stem of data.frontmatter.audio.filter((t) => t.relativeDirectory.includes("Stems"))) {
+					if (data?.frontmatter?.album && !foundAlbums.includes(data?.frontmatter?.album)) {
+						const album: IAlbum = {
+							Name: data?.frontmatter?.album,
+							ReleaseDate: new Date(data?.frontmatter?.date),
+							Songs: [foundAudio],
+							Type: data?.frontmatter?.albumType,
+							Artwork: albumArt
+						};
+						foundAlbums.push(album);
+						foundAudio.Album = album;
+					} else {
+						const albumIndex = foundAlbums.findIndex((album) => album.Name === data?.frontmatter?.album);
+						if (albumIndex !== -1) {
+							foundAlbums[albumIndex].Songs.push(foundAudio);
+							foundAudio.Album = foundAlbums[albumIndex];
+						}
+					}
+
+					for (const stem of data?.frontmatter?.audio.filter((t) => t.relativeDirectory.includes("Stems"))) {
 						foundAudio.Stems.push({
-							Name: stem.name,
+							Name: stem.name.replace("_", " "),
 							Path: stem.publicURL,
 							Volume: 0
 						});
@@ -158,6 +187,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 				}
 			}
 
+			foundAlbums.sort((a, b) => (a.ReleaseDate < b.ReleaseDate ? 1 : -1));
+
 			// Sort tracks based on album color in ascending order
 			foundTracks.sort((a, b) => a.Order - b.Order);
 
@@ -166,6 +197,9 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 			setTracks(foundTracks);
 			setDownloads(foundDownloads);
+			setAlbums(foundAlbums);
+
+			Tone.start();
 		}
 	};
 
@@ -253,126 +287,236 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	};
 
 	const updateSelectedAudio = async (audio: IAudio, randomizeEffects: boolean): Promise<void> => {
-		if (Tone.Transport.state === "started" || Tone.Transport.state === "paused" || (Tone.Transport.state === "stopped" && playerRef.current)) {
-			if (selectedAudio && selectedAudio.CurrentTimestampEventId) {
-				Tone.Transport.clear(selectedAudio.CurrentTimestampEventId);
+		try {
+			console.log('Starting updateSelectedAudio');
+
+			// 1. Clear ALL old events FIRST
+			if (timestampEventRef.current !== null) {
+				Tone.getTransport().clear(timestampEventRef.current);
+				console.log('Cleared old timestamp event:', timestampEventRef.current);
+				timestampEventRef.current = null;
 			}
 
-			if (Tone.Transport.state === "paused") {
-				Tone.Transport.start();
+			if (endEventRef.current !== null) {
+				Tone.getTransport().clear(endEventRef.current);
+				console.log('Cleared old end event:', endEventRef.current);
+				endEventRef.current = null;
 			}
 
-			if (selectedAudio) {
-				if (selectedAudio.Stems.length > 0) {
-					selectedAudio.Stems.forEach((stem) => {
-						playerRef.current.player(stem.Name).unsync();
-						playerRef.current.player(stem.Name).dispose();
-					});
-				} else {
+			// 2. Ensure audio context is started
+			await Tone.start();
+
+			// 3. Stop and dispose current playback
+			if (playerRef.current) {
+				try {
+					playerRef.current.stop();
+				} catch (e) {
+					console.warn('Error stopping player:', e);
+				}
+			}
+
+			// Stop transport
+			Tone.getTransport().stop();
+			Tone.getTransport().cancel();
+
+			// Remove old end listener
+			Tone.getTransport().off('stop');
+
+			// 4. Clean up old resources
+			if (selectedAudio?.CurrentTimestampEventId) {
+				Tone.getTransport().clear(selectedAudio.CurrentTimestampEventId);
+			}
+
+			if (selectedAudio?.Stems?.length > 0) {
+				selectedAudio.Stems.forEach((stem) => {
+					try {
+						playerRef.current?.player(stem.Name)?.unsync();
+						playerRef.current?.player(stem.Name)?.dispose();
+					} catch (e) {
+						console.error('Error disposing stem:', e);
+					}
+				});
+			} else if (playerRef.current) {
+				try {
 					playerRef.current.unsync();
 					playerRef.current.dispose();
+				} catch (e) {
+					console.error('Error disposing player:', e);
 				}
 			}
 
-			distortionEffect.dispose();
-			chorusEffect.dispose();
-			feedbackDelayEffect.dispose();
-			vibratoEffect.dispose();
-			pitchEffect.dispose();
-			lowPassFilterEffect.dispose();
-			reverbEffect.dispose();
-			phaserEffect.dispose();
+			// 5. Dispose effects
+			[distortionEffect, chorusEffect, feedbackDelayEffect, vibratoEffect,
+				pitchEffect, lowPassFilterEffect, reverbEffect, phaserEffect].forEach(effect => {
+					try {
+						effect?.dispose();
+					} catch (e) {
+						console.error('Error disposing effect:', e);
+					}
+				});
 
 			if (recorderRef.current) {
-				recorderRef.current.dispose();
-			}
-		}
-
-		const tempoValue: number = randomizeEffects ? Math.random() * (1.4 - 0.6 + 1) + 0.6 : tempoLevel;
-		let startTime: number = 0;
-
-		if (audio.Stems.length > 0) {
-			const initialURLs = audio.Stems.reduce((acc, stem) => {
-				const name: string = stem["Name"];
-				acc[name] = stem["Path"];
-				return acc;
-			}, {});
-
-			let duration: number = 0;
-			playerRef.current = await new Tone.Players({
-				urls: initialURLs,
-				onload: async () => {
-					await Promise.all(
-						audio.Stems.map((stem) => {
-							const stemLength: number = playerRef.current.player(stem.Name).buffer.duration;
-							if (stemLength > duration) {
-								duration = stemLength;
-							}
-							const tempChannel = new Tone.Channel().toDestination();
-							stem.Channel = tempChannel;
-							playerRef.current.player(stem.Name).connect(tempChannel);
-							playerRef.current.player(stem.Name).reverse = audio.Reversed;
-							playerRef.current.player(stem.Name).playbackRate = tempoValue;
-							playerRef.current.player(stem.Name).sync();
-							playerRef.current.player(stem.Name).start();
-						})
-					).then(() => {
-						audio.Duration = duration / tempoValue;
-						const currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
-							() => {
-								setPlayerTimestamp(startTime++);
-							},
-							1,
-							0,
-							audio.Duration
-						);
-
-						audio.CurrentTimestampEventId = currentTimestampEventId;
-						audio.Bpm = Tone.Transport.bpm.value;
-
-						setSelectedAudio(audio);
-					});
+				try {
+					recorderRef.current.dispose();
+				} catch (e) {
+					console.error('Error disposing recorder:', e);
 				}
-			}).toDestination();
-		} else {
-			playerRef.current = new Tone.Player();
-			playerRef.current.context.resume();
-			await playerRef.current.load(audio.Path);
-			playerRef.current.reverse = audio.Reversed;
-			playerRef.current.playbackRate = tempoValue;
-			playerRef.current.toDestination().sync().start(0);
+			}
 
-			audio.Duration = (playerRef.current.buffer.duration as number) / tempoValue;
-			audio.Bpm = Tone.Transport.bpm.value;
+			const tempoValue = randomizeEffects ? Math.random() * (1.4 - 0.6 + 1) + 0.6 : tempoLevel;
 
-			const currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
-				() => {
-					setPlayerTimestamp(startTime++);
-				},
-				1,
-				0,
-				audio.Duration
-			);
+			if (audio.Stems?.length > 0) {
+				console.log('Loading stems:', audio.Stems.length);
 
-			audio.CurrentTimestampEventId = currentTimestampEventId;
-			setSelectedAudio(audio);
+				const initialURLs = audio.Stems.reduce((acc, stem) => {
+					acc[stem.Name] = stem.Path;
+					return acc;
+				}, {});
+
+				let duration = 0;
+
+				playerRef.current = new Tone.Players({
+					urls: initialURLs,
+					onload: async () => {
+						console.log('Stems loaded');
+						try {
+							// Set up channels
+							audio.Stems.forEach((stem) => {
+								const stemLength = playerRef.current.player(stem.Name).buffer.duration;
+								if (stemLength > duration) {
+									duration = stemLength;
+								}
+
+								const tempChannel = new Tone.Channel().toDestination();
+								stem.Channel = tempChannel;
+
+								const player = playerRef.current.player(stem.Name);
+								player.connect(tempChannel);
+								player.reverse = audio.Reversed;
+								player.playbackRate = tempoValue;
+								player.volume.value = 0;
+								player.sync();
+								player.start(0);
+							});
+
+							audio.Duration = duration / tempoValue;
+
+							// Update state first
+							setSelectedAudio(audio);
+							setPlayerTimestamp(0);
+
+							// Reset transport BEFORE scheduling events
+							Tone.getTransport().seconds = 0;
+
+							// Schedule timestamp updates
+							const newTimestampEventId = Tone.getTransport().scheduleRepeat(
+								() => {
+									setPlayerTimestamp(Tone.Transport.seconds);
+								},
+								1,
+								0,
+								audio.Duration
+							);
+
+							timestampEventRef.current = newTimestampEventId;
+							console.log('Timestamp event scheduled:', newTimestampEventId);
+
+							// Start transport
+							Tone.getTransport().start();
+
+							// Schedule end event
+							const newEndEventId = Tone.getTransport().scheduleOnce(() => {
+								console.log('Song ended');
+								setPlayerTimestamp(0);
+								setIsPlaying(false);
+								Tone.getTransport().stop();
+								Tone.getTransport().seconds = 0;
+								endEventRef.current = null;
+							}, `+${audio.Duration}`);
+
+							endEventRef.current = newEndEventId;
+							console.log('End event scheduled:', newEndEventId);
+
+						} catch (error) {
+							console.error('Error in onload callback:', error);
+						}
+					}
+				}).toDestination();
+
+			} else {
+				console.log('Loading single audio file:', audio.Path);
+
+				playerRef.current = new Tone.Player({
+					url: audio.Path,
+					onload: () => {
+						console.log('Single audio loaded');
+						try {
+							playerRef.current.reverse = audio.Reversed;
+							playerRef.current.playbackRate = tempoValue;
+							playerRef.current.volume.value = 0;
+							playerRef.current.sync();
+
+							audio.Duration = (playerRef.current.buffer.duration as number) / tempoValue;
+
+							setSelectedAudio(audio);
+							setPlayerTimestamp(0);
+
+							// Reset transport
+							Tone.getTransport().seconds = 0;
+
+							// Schedule timestamp updates
+							const newTimestampEventId = Tone.getTransport().scheduleRepeat(
+								() => {
+									setPlayerTimestamp(Tone.Transport.seconds);
+								},
+								1,
+								0,
+								audio.Duration
+							);
+
+							timestampEventRef.current = newTimestampEventId;
+							console.log('Timestamp event scheduled:', newTimestampEventId);
+
+							// Start playback
+							playerRef.current.start(0);
+							Tone.getTransport().start();
+
+							// Schedule end event
+							const newEndEventId = Tone.getTransport().scheduleOnce(() => {
+								console.log('Song ended');
+								setPlayerTimestamp(0);
+								setIsPlaying(false);
+								Tone.getTransport().stop();
+								Tone.getTransport().seconds = 0;
+								endEventRef.current = null;
+							}, `+${audio.Duration}`);
+
+							endEventRef.current = newEndEventId;
+							console.log('End event scheduled:', newEndEventId);
+
+						} catch (error) {
+							console.error('Error in single audio onload:', error);
+						}
+					}
+				}).toDestination();
+			}
+
+			if (randomizeEffects) {
+				setTempoLevel(tempoValue);
+				setVisualTempoLevel(tempoValue);
+			}
+
+			const recorder = new Tone.Recorder();
+			recorderRef.current = recorder;
+			Tone.getDestination().connect(recorder);
+
+			setEffectsChain(randomizeEffects);
+
+			console.log('updateSelectedAudio complete');
+
+		} catch (error) {
+			console.error('Error in updateSelectedAudio:', error);
 		}
-
-		if (randomizeEffects) {
-			setTempoLevel(tempoValue);
-			setVisualTempoLevel(tempoValue);
-		}
-
-		const recorder = new Tone.Recorder();
-		recorderRef.current = recorder;
-		Tone.Destination.connect(recorder);
-
-		setPlayerTimestamp(0);
-
-		Tone.Transport.start();
-		Tone.Transport.seconds = 0;
-
-		setEffectsChain(randomizeEffects);
 	};
 
 	const resetToDefaults = (): void => {
@@ -428,10 +572,10 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		const timestampRatio: number = playerTimestamp / selectedAudio.Duration;
 		let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
 
-		Tone.Transport.clear(selectedAudio.CurrentTimestampEventId);
-		Tone.Transport.seconds = updatedTimestamp;
+		Tone.getTransport().clear(selectedAudio.CurrentTimestampEventId);
+		Tone.getTransport().seconds = updatedTimestamp;
 
-		let currentTimestampEventId: number = Tone.Transport.scheduleRepeat(
+		let currentTimestampEventId: number = Tone.getTransport().scheduleRepeat(
 			() => {
 				setPlayerTimestamp(Tone.TransportTime().toSeconds());
 			},
@@ -462,7 +606,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setSelectedAudio(tempAudio);
 	};
 
-	const handleDistortionLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleDistortionLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -473,7 +617,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setDistortionLevel(value);
 	};
 
-	const handlePitchLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handlePitchLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -483,7 +627,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setPitchLevel(value);
 	};
 
-	const handleTempoLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleTempoLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -500,7 +644,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setVisualTempoLevel(value);
 	};
 
-	const handleFeedbackDelayLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleFeedbackDelayLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -511,7 +655,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setFeedbackDelayLevel(value);
 	};
 
-	const handleChorusLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleChorusLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -522,7 +666,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setChorusLevel(value);
 	};
 
-	const handleVibratoLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleVibratoLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -533,7 +677,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setVibratoLevel(value);
 	};
 
-	const handleLowPassFilterLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleLowPassFilterLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -544,7 +688,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setLowPassFilterLevel(value);
 	};
 
-	const handleReverbLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handleReverbLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -555,7 +699,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		setReverbLevel(value);
 	};
 
-	const handlePhaserLevel = (event: Event, value: number, activeThumb: number): void => {
+	const handlePhaserLevel = (event: Event, value: number): void => {
 		// Workaround for mobile slider events, extra mouse down event was getting registered on
 		// mobile and causing slider value to jump
 		if (event.type === "mousedown" && isIOS) {
@@ -567,6 +711,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	};
 
 	const contextObject: IAppContext = {
+		Albums: albums,
 		Tracks: tracks,
 		Downloads: downloads,
 		Swatches: swatches,
@@ -575,6 +720,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		SelectedAudio: selectedAudio,
 		Player: playerRef,
 		Recorder: recorderRef,
+		Timestamp: timestampEventRef,
+		EndTimestamp: endEventRef,
 		DistortionLevel: distortionLevel,
 		DistortionEffect: distortionEffect,
 		FeedbackDelayLevel: feedbackDelayLevel,
@@ -596,6 +743,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		PlayerTimestamp: playerTimestamp,
 		DisplayTutorialDialog: displayTutorialDialog,
 		DisplayTrainingModules: displayTrainingModules,
+		IsPlaying: isPlaying,
+		SetIsPlaying: setIsPlaying,
 		SetTempoLevel: setTempoLevel,
 		SetSelectedSwatch: setSelectedSwatch,
 		SetUpdateSwatch: setUpdateSwatch,

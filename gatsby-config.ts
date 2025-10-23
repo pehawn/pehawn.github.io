@@ -2,10 +2,10 @@ import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
 	siteMetadata: {
-		title: `Patrick Hawn`,
-		description: `Software Developer and Music Producer based in Kansas City`,
-		keywords: ["Patrick Hawn", "Music", "Portfolio", "Kansas City", "Producer", "Software Developer", "Programmer"],
-		siteUrl: `https://phawn.dev`,
+		title: `Hawnest`,
+		description: `Singer/Songwriter based in Kansas City`,
+		keywords: ["Hawnest", "Patrick Hawn", "Music", "Portfolio", "Singer", "Songwriter", "Kansas City", "Producer", "Software Developer", "Programmer"],
+		siteUrl: `https://hawnest.com/`,
 		twitterUsername: ``,
 		image: ``
 	},
@@ -14,8 +14,34 @@ const config: GatsbyConfig = {
 	// Learn more at: https://gatsby.dev/graphql-typegen
 	graphqlTypegen: true,
 	plugins: [
+		{
+			resolve: `gatsby-plugin-manifest`,
+			options: {
+				name: `Hawnest`,
+				short_name: `Hawnest`,
+				start_url: `/`,
+				background_color: `#f7f0eb`,
+				theme_color: `#a2466c`,
+				// Enables "Add to Homescreen" prompt and disables browser UI (including back button)
+				// see https://developers.google.com/web/fundamentals/web-app-manifest/#display
+				display: `standalone`,
+				icon: `src/images/REGGIE.png`, // This path is relative to the root of the site.
+				include_favicon: true, // Include favicon
+				cache_busting_mode: 'none',
+				icon_options: {
+					purpose: `any maskable`,
+				},
+				legacy: true,
+			}
+		},
 		"gatsby-plugin-image",
-		"gatsby-plugin-sharp",
+		{
+			resolve: `gatsby-source-filesystem`,
+			options: {
+				name: `images`,
+				path: `${__dirname}/src/assets/images`
+			}
+		},
 		{
 			resolve: "gatsby-source-filesystem",
 			options: {
@@ -30,8 +56,8 @@ const config: GatsbyConfig = {
 				path: `${__dirname}/src/assets/downloads`
 			}
 		},
-		"gatsby-plugin-mdx",
 		"gatsby-transformer-sharp",
+		"gatsby-plugin-sharp",
 		{
 			resolve: `gatsby-transformer-remark`,
 			options: {
@@ -48,7 +74,8 @@ const config: GatsbyConfig = {
 					}
 				]
 			}
-		}
+		},
+		"gatsby-plugin-mdx"
 	]
 };
 
