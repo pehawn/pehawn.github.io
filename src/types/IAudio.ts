@@ -1,3 +1,4 @@
+import { IAlbum } from "./IAlbum";
 import { IStem } from "./IStem";
 
 export interface IAudio {
@@ -14,7 +15,7 @@ export interface IAudio {
 	Bpm?: number;
 	Stems?: IStem[];
 	IsHover?: boolean;
-	AlbumArt?: any;
-	CardColor?: string;
 	Order?: number;
+	Album?: IAlbum;
+	EventEndId?: number;
 }
