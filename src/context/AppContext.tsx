@@ -45,7 +45,6 @@ export interface IAppContext {
 	PlayerTimestamp: number;
 	DisplayTutorialDialog: boolean;
 	DisplayTrainingModules: boolean[];
-	IsPlaying: boolean;
 	SetTempoLevel(tempo: number): void;
 	SetSelectedSwatch(swatch: ISwatch): void;
 	SetUpdateSwatch(update: boolean): void;
@@ -66,7 +65,6 @@ export interface IAppContext {
 	ResetVolumeLevels(): void;
 	SetDisplayTutorialDialog(displayTutorialDialog: boolean): void;
 	SetDisplayTrainingModules(displayTrainingModules: boolean[]): void;
-	SetIsPlaying(isPlaying: boolean): void;
 }
 
 export const AppContext = React.createContext<IAppContext>(undefined);
@@ -123,7 +121,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	const [tracks, setTracks] = useDevHook<IAudio[]>([], "tracks", ReactHook.State, env);
 	const [downloads, setDownloads] = useDevHook<string[]>([], "downloads", ReactHook.State, env);
 	const [albums, setAlbums] = useDevHook<IAlbum[]>([], "albums", ReactHook.State, env);
-	const [isPlaying, setIsPlaying] = useDevHook<boolean>(false, "isPlaying", ReactHook.State, env);
+	//const [isPlaying, setIsPlaying] = useDevHook<boolean>(false, "isPlaying", ReactHook.State, env);
 
 	// Ref Objects
 	const playerRef = useDevHook(null, "playerRef", ReactHook.Ref, env);
@@ -428,7 +426,6 @@ export const AppContextProvider = (props: IAppContextProps) => {
 							const newEndEventId = Tone.getTransport().scheduleOnce(() => {
 								console.log('Song ended');
 								setPlayerTimestamp(0);
-								setIsPlaying(false);
 								Tone.getTransport().stop();
 								Tone.getTransport().seconds = 0;
 								endEventRef.current = null;
@@ -485,7 +482,6 @@ export const AppContextProvider = (props: IAppContextProps) => {
 							const newEndEventId = Tone.getTransport().scheduleOnce(() => {
 								console.log('Song ended');
 								setPlayerTimestamp(0);
-								setIsPlaying(false);
 								Tone.getTransport().stop();
 								Tone.getTransport().seconds = 0;
 								endEventRef.current = null;
@@ -743,8 +739,6 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		PlayerTimestamp: playerTimestamp,
 		DisplayTutorialDialog: displayTutorialDialog,
 		DisplayTrainingModules: displayTrainingModules,
-		IsPlaying: isPlaying,
-		SetIsPlaying: setIsPlaying,
 		SetTempoLevel: setTempoLevel,
 		SetSelectedSwatch: setSelectedSwatch,
 		SetUpdateSwatch: setUpdateSwatch,
