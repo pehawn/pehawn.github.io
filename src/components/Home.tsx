@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AppContext } from '../context/AppContext';
-import { Play, Pause, Volume2, StepForward, StepBack, Menu, X, RotateCcw, Shuffle } from 'lucide-react';
+import { Play, Pause, Volume2, StepForward, StepBack, Menu, X, RotateCcw, Dices } from 'lucide-react';
 import { IAudio } from '../types/IAudio';
 import * as Tone from "tone";
 import { IStem } from '../types/IStem';
@@ -22,15 +22,18 @@ const HawnestAudioPlayer = () => {
   const [waveformData, setWaveformData] = useState({});
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [volume, setVolume] = useState(75);
+  const [transportState, setTransportState] = useState<string>(Tone.Transport.state);
   const volumeSliderRef = useRef(null);
 
   const audioContextRef = useRef(null);
 
-  const songs = appContext.Tracks;
-
   React.useEffect(() => {
     setSelectedAlbum(appContext?.Albums[0]);
   }, [appContext?.Albums]);
+
+  // React.useEffect(() => {
+  //   setTransportState(Tone.Transport.state);
+  // }, [Tone.Transport.state]);
 
   // Add refs to track loop events
   const loopTimestampEventRef = useRef<number | null>(null);
@@ -292,7 +295,7 @@ const HawnestAudioPlayer = () => {
   // Load waveform when song is hovered
   useEffect(() => {
     if (hoveredCard && !waveformData[hoveredCard]) {
-      const song = songs.find(s => s.Name === hoveredCard);
+      const song = appContext.Tracks.find(s => s.Name === hoveredCard);
       if (song) {
         generateWaveform(song.Path, song.Name);
       }
@@ -558,20 +561,26 @@ const HawnestAudioPlayer = () => {
           <div className="py-6 sm:py-8 border-b border-black/10">
             <div className="flex gap-4 sm:gap-6 text-xs tracking-wider overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
               <button
+                disabled={appContext.SelectedAudio === null ? true : false}
                 onClick={() => activeFilter === 'STEMS' ? setActiveFilter(null) : setActiveFilter('STEMS')}
-                className={`whitespace-nowrap transition-opacity ${activeFilter === 'STEMS' ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
+                className={`whitespace-nowrap transition-opacity ${activeFilter === 'STEMS' ? 'opacity-100' : 'opacity-30 hover:opacity-60'}
+                disabled:opacity-30 disabled:hover:opacity-30 disabled:cursor-not-allowed`}
               >
                 LEVELS
               </button>
               <button
+                disabled={appContext.SelectedAudio === null ? true : false}
                 onClick={() => activeFilter === 'EFFECTS' ? setActiveFilter(null) : setActiveFilter('EFFECTS')}
-                className={`whitespace-nowrap transition-opacity ${activeFilter === 'EFFECTS' ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
+                className={`whitespace-nowrap transition-opacity ${activeFilter === 'EFFECTS' ? 'opacity-100' : 'opacity-30 hover:opacity-60'}
+                disabled:opacity-30 disabled:hover:opacity-30 disabled:cursor-not-allowed`}
               >
                 EFFECTS
               </button>
               <button
+                disabled={appContext.SelectedAudio === null ? true : false}
                 onClick={() => activeFilter === 'LOOPS' ? setActiveFilter(null) : setActiveFilter('LOOPS')}
-                className={`whitespace-nowrap transition-opacity ${activeFilter === 'LOOPS' ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
+                className={`whitespace-nowrap transition-opacity ${activeFilter === 'LOOPS' ? 'opacity-100' : 'opacity-30 hover:opacity-60'}
+                disabled:opacity-30 disabled:hover:opacity-30 disabled:cursor-not-allowed`}
               >
                 LOOPER
               </button>
@@ -775,8 +784,8 @@ const HawnestAudioPlayer = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                   <button
                     onClick={setLoopStart}
-                    disabled={startLoopTime !== null || !appContext.IsPlaying}
-                    className={`w-full sm:flex-1 text-xs tracking-wider px-4 py-3 border border-black/10 rounded-full transition-all ${startLoopTime !== null || !appContext.IsPlaying
+                    disabled={startLoopTime !== null || transportState !== 'started'}
+                    className={`w-full sm:flex-1 text-xs tracking-wider px-4 py-3 border border-black/10 rounded-full transition-all ${startLoopTime !== null || transportState !== 'started'
                       ? 'opacity-40 cursor-not-allowed'
                       : 'hover:bg-black hover:text-white'
                       }`}
@@ -785,8 +794,8 @@ const HawnestAudioPlayer = () => {
                   </button>
                   <button
                     onClick={setLoopEnd}
-                    disabled={startLoopTime === null || endLoopTime !== null || !appContext.IsPlaying}
-                    className={`w-full sm:flex-1 text-xs tracking-wider px-4 py-3 border border-black/10 rounded-full transition-all ${startLoopTime === null || endLoopTime !== null || !appContext.IsPlaying
+                    disabled={startLoopTime === null || endLoopTime !== null || transportState !== 'started'}
+                    className={`w-full sm:flex-1 text-xs tracking-wider px-4 py-3 border border-black/10 rounded-full transition-all ${startLoopTime === null || endLoopTime !== null || transportState !== 'started'
                       ? 'opacity-40 cursor-not-allowed'
                       : 'hover:bg-black hover:text-white'
                       }`}
@@ -828,19 +837,20 @@ const HawnestAudioPlayer = () => {
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                       <button
                         onClick={() => {
-                          if (appContext.SelectedAudio?.Name !== song.Name) {
+                          if (appContext.SelectedAudio?.Name !== song.Name || Tone.Transport.state === 'stopped') {
                             updateAudio(song, false, false);
-                          } else if (appContext.IsPlaying) {
-                            Tone.Transport.pause()
-                          } else if (!appContext.IsPlaying) {
-                            Tone.Transport.start()
+                            setTransportState('started');
+                          } else if (transportState === 'started') {
+                            Tone.Transport.pause();
+                            setTransportState('paused');
+                          } else if (transportState === 'paused') {
+                            Tone.Transport.start();
+                            setTransportState('started');
                           }
-
-                          appContext.SetIsPlaying(!appContext.IsPlaying);
                         }}
                         className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all flex-shrink-0"
                       >
-                        {appContext.SelectedAudio?.Name === song.Name && appContext.IsPlaying ? (
+                        {appContext.SelectedAudio?.Name === song.Name && transportState === 'started' ? (
                           <Pause className="w-4 h-4" />
                         ) : (
                           <Play className="w-4 h-4 ml-0.5" />
@@ -848,11 +858,15 @@ const HawnestAudioPlayer = () => {
                       </button>
                       <h3 className="text-base sm:text-lg tracking-wide truncate flex-1">{song.Name}</h3>
                       <div className="flex sm:hidden items-center gap-2 flex-shrink-0">
-                        <button title="Reverse">
+                        <button title="Reverse" onClick={() => {
+                          updateAudio(song, true, false);
+                        }}>
                           <RotateCcw className="w-3.5 h-3.5" />
                         </button>
-                        <button title="Randomize">
-                          <Shuffle className="w-3.5 h-3.5" />
+                        <button title="Randomize" onClick={() => {
+                          updateAudio(song, Math.random() <= 0.5, true);
+                        }}>
+                          <Dices className="w-3.5 h-3.5" />
                         </button>
                         <div className="text-xs tracking-wider opacity-40 w-10 text-right">{song?.Duration}</div>
                       </div>
@@ -866,7 +880,6 @@ const HawnestAudioPlayer = () => {
                       <button
                         onClick={() => {
                           updateAudio(song, true, false);
-                          appContext.SetIsPlaying(true);
                         }}
                         className="text-xs tracking-wider px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
                         REVERSE
@@ -874,7 +887,6 @@ const HawnestAudioPlayer = () => {
                       <button
                         onClick={() => {
                           updateAudio(song, Math.random() <= 0.5, true);
-                          appContext.SetIsPlaying(true);
                         }}
                         className="text-xs tracking-wider px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
                         RANDOMIZE
@@ -885,9 +897,9 @@ const HawnestAudioPlayer = () => {
                 </div>
 
                 {/* Waveform - Appears on Hover with Real Audio Data */}
-                <div className={`overflow-hidden transition-all duration-500 ${hoveredCard === song.Name ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
+                <div className={`hidden sm:block overflow-hidden transition-all duration-500 ${hoveredCard === song.Name ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
                   }`}>
-                  <div className="flex items-center gap-0.5 h-12 px-4 pb-6">
+                  <div className="flex items-center gap-0.5 h-20 px-4 pb-6">
                     {waveformData[song.Name] ? (
                       // Real waveform data
                       waveformData[song.Name].map((value, i) => (
@@ -895,7 +907,7 @@ const HawnestAudioPlayer = () => {
                           key={i}
                           className="flex-1 bg-black transition-all duration-300"
                           style={{
-                            height: `${value * 150}%`,
+                            height: `${value * 100}%`,
                           }}
                         ></div>
                       ))
@@ -927,7 +939,7 @@ const HawnestAudioPlayer = () => {
             <div className="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
               {/* Mini Album Art */}
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-sm font-light tracking-wider text-zinc-400 flex-shrink-0">
-                {appContext.SelectedAudio ? <GatsbyImage image={selectedAlbum?.Artwork} alt={selectedAlbum?.Name} className="rounded-sm" /> : null}
+                {appContext.SelectedAudio ? <GatsbyImage image={appContext.SelectedAudio?.Album?.Artwork} alt={appContext.SelectedAudio?.Album?.Name} className="rounded-sm" /> : null}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm tracking-wide truncate">{appContext?.SelectedAudio?.Album?.Name} - {appContext?.SelectedAudio?.Album?.Type}</div>
@@ -940,16 +952,17 @@ const HawnestAudioPlayer = () => {
                 <StepBack className="w-4 h-4" />
               </button>
               <button className="w-10 h-10 sm:w-12 sm:h-12 rounded-full..."
-              onClick={() => {
-                  appContext.SetIsPlaying(!appContext.IsPlaying);
-                  if (appContext.IsPlaying) {
-                    Tone.Transport.pause()
+                onClick={() => {
+                  if (transportState === "paused") {
+                    Tone.Transport.start();
+                    setTransportState("started");
                   } else {
-                    Tone.Transport.start()
+                    Tone.Transport.pause();
+                    setTransportState("paused");
                   }
                 }}
                 disabled={!appContext?.SelectedAudio}>
-                {appContext.IsPlaying ? <Pause className="w-5 h-5 mx-auto" /> : <Play className="w-5 h-5 mx-auto" />}
+                {transportState === "started" ? <Pause className="w-5 h-5 mx-auto" /> : <Play className="w-5 h-5 mx-auto" />}
               </button>
               <button className="hover:opacity-50 transition-opacity hidden sm:block" onClick={() => jumpToPosition(10)} disabled={!appContext.SelectedAudio || appContext.PlayerTimestamp + 10 > appContext?.SelectedAudio?.Duration}>
                 <StepForward className="w-4 h-4" />
