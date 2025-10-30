@@ -862,7 +862,7 @@ const HawnestAudioPlayer = () => {
                         }}
                         className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all flex-shrink-0"
                       >
-                        {isLoadingSong && appContext.SelectedAudio?.Name === song.Name ? (
+                        {isLoadingSong ? (
                           <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
                         ) : appContext.SelectedAudio?.Name === song.Name && Tone.Transport.state === 'started' ? (
                           <Pause className="w-4 h-4" />
