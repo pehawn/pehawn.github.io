@@ -30,12 +30,17 @@ const HawnestAudioPlayer = () => {
   const audioContextRef = useRef(null);
 
   React.useEffect(() => {
+  if (appContext.Player.current?.loaded === false) {
+    setIsLoadingSong(true);
+    // Poll until loaded
+  } else {
+    setIsLoadingSong(false);
+  }
+}, [appContext.Player.current, appContext.SelectedAudio]);
+
+  React.useEffect(() => {
     setSelectedAlbum(appContext?.Albums[0]);
   }, [appContext?.Albums]);
-
-  // React.useEffect(() => {
-  //   setTransportState(Tone.Transport.state);
-  // }, [Tone.Transport.state]);
 
   // Add refs to track loop events
   const loopTimestampEventRef = useRef<number | null>(null);
@@ -232,19 +237,11 @@ const HawnestAudioPlayer = () => {
   const updateAudio = async (audio: IAudio, reversed: boolean, randomizeEffects: boolean): Promise<void> => {
 
     if (!appContext.Player.current || appContext.Player.current.loaded) {
-      setIsLoadingSong(true);
       let tempAudio: IAudio = { ...audio };
       tempAudio.Reversed = reversed;
       tempAudio.Paused = false;
 
-      try {
-        await appContext.UpdateSelectedAudio(tempAudio, randomizeEffects);
-      } finally {
-        // Small delay to ensure audio is ready
-        setTimeout(() => {
-          setIsLoadingSong(false);
-        }, 500);
-      }
+      await appContext.UpdateSelectedAudio(tempAudio, randomizeEffects);
     }
   };
 
@@ -895,6 +892,7 @@ const HawnestAudioPlayer = () => {
                         disabled={isLoadingSong}
                         onClick={() => {
                           updateAudio(song, true, false);
+                          setTransportState('started');
                         }}
                         className="text-xs tracking-wider px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
                         REVERSE
@@ -903,6 +901,7 @@ const HawnestAudioPlayer = () => {
                         disabled={isLoadingSong}
                         onClick={() => {
                           updateAudio(song, Math.random() <= 0.5, true);
+                          setTransportState('started');
                         }}
                         className="text-xs tracking-wider px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
                         RANDOMIZE
@@ -979,11 +978,11 @@ const HawnestAudioPlayer = () => {
                 }}
                 disabled={!appContext?.SelectedAudio || isLoadingSong}>
                 {isLoadingSong ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : transportState === "started" && Tone.Transport.state !== 'stopped' ? (
-                  <Pause className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin ml-3"></div>
+                ) : Tone.Transport.state === 'started' ? (
+                  <Pause className="w-4 h-4 sm:w-5 sm:h-5 ml-3" />
                 ) : (
-                  <Play className="w-4 h-4 sm:w-5 sm:h-5 ml-0.5" />
+                  <Play className="w-4 h-4 sm:w-5 sm:h-5 ml-3" />
                 )}
               </button>
               <button className="hover:opacity-50 transition-opacity hidden sm:block" onClick={() => jumpToPosition(10)} disabled={!appContext.SelectedAudio || appContext.PlayerTimestamp + 10 > appContext?.SelectedAudio?.Duration}>
