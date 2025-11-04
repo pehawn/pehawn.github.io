@@ -237,7 +237,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		const lowPassFilterValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : lowPassFilterLevel;
 		const phaserValue: number = randomizeEffects ? Math.floor(Math.random() * 100) : phaserLevel;
 
-		let tempDistortion = new Tone.Distortion(1);
+		let tempDistortion = new Tone.Distortion(0);
 		tempDistortion.wet.value = distValue / 100;
 
 		let tempPitch = new Tone.PitchShift();

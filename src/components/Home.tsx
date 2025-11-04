@@ -30,13 +30,13 @@ const HawnestAudioPlayer = () => {
   const audioContextRef = useRef(null);
 
   React.useEffect(() => {
-  if (appContext.Player.current?.loaded === false) {
-    setIsLoadingSong(true);
-    // Poll until loaded
-  } else {
-    setIsLoadingSong(false);
-  }
-}, [appContext.Player.current, appContext.SelectedAudio]);
+    if (appContext.Player.current?.loaded === false) {
+      setIsLoadingSong(true);
+      // Poll until loaded
+    } else {
+      setIsLoadingSong(false);
+    }
+  }, [appContext.Player.current, appContext.SelectedAudio]);
 
   React.useEffect(() => {
     setSelectedAlbum(appContext?.Albums[0]);
@@ -552,18 +552,16 @@ const HawnestAudioPlayer = () => {
       <div className="pt-14 sm:pt-16 px-4 sm:px-6 pb-32">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
-          <div className="py-12 sm:py-20 border-b border-black/10 flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
-            {/* Album Art */}
-            {/* <div className="w-48 h-48 bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-6xl font-light tracking-wider text-zinc-400 flex-shrink-0">
-              R
-            </div> */}
-            {selectedAlbum && <GatsbyImage image={selectedAlbum?.Artwork} alt={selectedAlbum?.Name} className="rounded-lg w-full sm:w-64 lg:w-80 flex-shrink-0" />}
-            {/* Album Info */}
-            <div className="pt-0 sm:pt-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4 tracking-tight">{selectedAlbum?.Name}</h1>
-              <p className="text-xs sm:text-sm tracking-wider opacity-60">{selectedAlbum?.Type} · {selectedAlbum?.ReleaseDate?.getFullYear()} · {selectedAlbum?.Songs.length} TRACKS</p>
+          {appContext?.Albums.length > 0 && (
+            <div className="py-12 sm:py-20 border-b border-black/10 flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
+              {selectedAlbum && <GatsbyImage image={selectedAlbum?.Artwork} alt={selectedAlbum?.Name} className="rounded-lg w-full sm:w-64 lg:w-80 flex-shrink-0" />}
+              {/* Album Info */}
+              <div className="pt-0 sm:pt-4">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4 tracking-tight">{selectedAlbum?.Name}</h1>
+                <p className="text-xs sm:text-sm tracking-wider opacity-60">{selectedAlbum?.Type} · {selectedAlbum?.ReleaseDate?.getFullYear()} · {selectedAlbum?.Songs.length} TRACKS</p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Filter Bar */}
           <div className="py-6 sm:py-8 border-b border-black/10">
@@ -857,10 +855,10 @@ const HawnestAudioPlayer = () => {
                             setTransportState('started');
                           }
                         }}
-                        className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all flex-shrink-0"
+                        className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all flex-shrink-0 active:bg-black active:text-white"
                       >
                         {isLoadingSong ? (
-                          <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         ) : appContext.SelectedAudio?.Name === song.Name && Tone.Transport.state === 'started' ? (
                           <Pause className="w-4 h-4" />
                         ) : (
