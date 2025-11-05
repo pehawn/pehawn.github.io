@@ -39,7 +39,21 @@ const config: GatsbyConfig = {
 			resolve: `gatsby-source-filesystem`,
 			options: {
 				name: `images`,
-				path: `${__dirname}/src/assets/images`
+				path: `${__dirname}/src/assets/images/albums`
+			}
+		},
+		{
+			resolve: `gatsby-source-filesystem`,
+			options: {
+				name: `epk`,
+				path: `${__dirname}/src/assets/images/epk`
+			}
+		},
+		{
+			resolve: `gatsby-source-filesystem`,
+			options: {
+				name: `presskit`,
+				path: `${__dirname}/src/assets/images/presskit`
 			}
 		},
 		{

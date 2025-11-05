@@ -1,10 +1,45 @@
 import React, { useState } from 'react';
 import { Download, ExternalLink, Mail, Instagram, Music, Image, Home } from 'lucide-react';
+import { GatsbyImage, getImage } from 'gatsby-plugin-image';
+import { graphql, useStaticQuery } from "gatsby";
 
 const HawnestEPK = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [mainPhoto, setMainPhoto] = useState(null);
+    const [pressKitPhotos, setPressKitPhotos] = useState([]);
+
+    const data = useStaticQuery(graphql`
+         query {
+           epk: allFile(filter: { sourceInstanceName: { eq: "epk" } }) {
+             nodes {
+               name
+               childImageSharp {
+                 gatsbyImageData(width: 400, placeholder: BLURRED)
+               }
+             }
+           }
+           presskit: allFile(filter: { sourceInstanceName: { eq: "presskit" } }) {
+             nodes {
+               name
+               childImageSharp {
+                 gatsbyImageData(width: 400, placeholder: BLURRED)
+               }
+             }
+           }
+         }
+        `);
+
+    React.useEffect(() => {
+        const mainPhotoNode = data.epk.nodes.find(node => node.name === 'MAIN');
+        setMainPhoto({ image: getImage(mainPhotoNode?.childImageSharp), name: mainPhotoNode?.name });
+        let pressKitPhotoNodes = data.presskit.nodes.slice().sort((a, b) => parseInt(a.name) - parseInt(b.name));
+        setPressKitPhotos(pressKitPhotoNodes.map(node => ({
+            name: node.name,
+            image: getImage(node.childImageSharp),
+        })));
+    }, [data])
 
     // Simple password protection - in production, use proper authentication
     const correctPassword = 'hawnest2025';
@@ -77,7 +112,7 @@ const HawnestEPK = () => {
                     </div>
                     <div className="flex items-center gap-4">
                         <a
-                            href="mailto:press@hawnest.com"
+                            href="mailto:hawnestmusic@gmail.com"
                             className="text-xs tracking-wider px-4 py-2 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-2"
                         >
                             <Mail className="w-3 h-3" />
@@ -100,10 +135,10 @@ const HawnestEPK = () => {
                     <div className="flex flex-col md:flex-row gap-8 items-start">
                         {/* Main Press Photo */}
                         <div className="w-full md:w-1/2">
-                            <div className="aspect-square bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-9xl font-light text-zinc-400">
+                            {/* <div className="aspect-square bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-9xl font-light text-zinc-400">
                                 R
-                            </div>
-                            <p className="text-xs mt-2 opacity-40">Press photo placeholder - replace with actual image</p>
+                            </div> */}
+                            <GatsbyImage image={mainPhoto?.image} alt={mainPhoto?.name} className="w-full h-auto" />
                         </div>
 
                         {/* Quick Info */}
@@ -115,7 +150,7 @@ const HawnestEPK = () => {
 
                             <div>
                                 <h2 className="text-xs tracking-wider opacity-60 mb-2">GENRE</h2>
-                                <p className="text-sm">Experimental Electronic / Ambient / Soundscapes</p>
+                                <p className="text-sm">Pop / R&B / Soul</p>
                             </div>
 
                             <div>
@@ -125,7 +160,7 @@ const HawnestEPK = () => {
 
                             <div>
                                 <h2 className="text-xs tracking-wider opacity-60 mb-2">LATEST RELEASE</h2>
-                                <p className="text-sm">REGGIE (Album, 2025)</p>
+                                <p className="text-sm">You Come Here Often? (EP, 2025)</p>
                             </div>
 
                             {/* Social Links */}
@@ -133,7 +168,7 @@ const HawnestEPK = () => {
                                 <h2 className="text-xs tracking-wider opacity-60 mb-3">LINKS</h2>
                                 <div className="flex flex-wrap gap-2">
                                     <a
-                                        href="https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn"
+                                        href="https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn" 
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
@@ -142,21 +177,25 @@ const HawnestEPK = () => {
                                         Spotify
                                     </a>
                                     <a
-                                        href="#"
+                                        href="https://music.apple.com/us/artist/hawnest/1842981468" 
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
                                     >
                                         <Music className="w-3 h-3" />
                                         Apple Music
                                     </a>
                                     <a
-                                        href="#"
+                                        href="https://www.instagram.com/hawnest_" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
                                     >
                                         <Instagram className="w-3 h-3" />
                                         Instagram
                                     </a>
                                     <a
-                                        href="#"
+                                        href="https://hawnest.com"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
                                     >
                                         <ExternalLink className="w-3 h-3" />
@@ -171,7 +210,7 @@ const HawnestEPK = () => {
                 {/* Biography */}
                 <section className="mb-16 pb-16 border-b border-black/10">
                     <h2 className="text-xs tracking-wider opacity-60 mb-6">BIOGRAPHY</h2>
-                    <div className="space-y-4 text-sm leading-relaxed max-w-3xl">
+                    <div className="space-y-4 text-sm leading-relaxed">
                         <p>
                             Hawnest is an independent artist exploring the intersection of sound, technology, and natural aesthetics.
                             Based in Kansas City, Missouri, the project represents a unique approach to modern music production that
@@ -215,11 +254,11 @@ const HawnestEPK = () => {
                                 R
                             </div>
                             <div className="flex-1">
-                                <h3 className="text-2xl font-light tracking-wide mb-2">REGGIE</h3>
-                                <p className="text-xs tracking-wider opacity-60 mb-4">ALBUM • 2025 • 9 TRACKS</p>
+                                <h3 className="text-2xl font-light tracking-wide mb-2">You Come Here Often?</h3>
+                                <p className="text-xs tracking-wider opacity-60 mb-4">EP • 2025 • 4 TRACKS</p>
                                 <p className="text-sm leading-relaxed mb-4">
-                                    The debut album from Hawnest explores experimental electronic production through nine carefully
-                                    crafted tracks. Each song showcases advanced audio manipulation techniques while maintaining
+                                    The debut EP from Hawnest explores pop and R&B influences through four carefully crafted
+                                    tracks. Each song showcases advanced audio manipulation techniques while maintaining
                                     organic, natural aesthetics.
                                 </p>
                                 <div className="flex gap-2">
@@ -227,12 +266,12 @@ const HawnestEPK = () => {
                                         href="https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs px-3 py-1.5 bg-black text-white rounded-full hover:bg-black/80 transition-all"
+                                        className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all"
                                     >
-                                        LISTEN ON SPOTIFY
+                                        SPOTIFY
                                     </a>
                                     <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
-                                        DOWNLOAD PRESS MATERIALS
+                                        DOWNLOAD PRESSKIT
                                     </button>
                                 </div>
                             </div>
@@ -243,11 +282,11 @@ const HawnestEPK = () => {
                     <div>
                         <h3 className="text-xs tracking-wider opacity-60 mb-4">FEATURED TRACKS</h3>
                         <div className="space-y-3">
-                            {['PLATINUM', 'EXTREMES', 'JAKS'].map((track, idx) => (
+                            {['REGGIE', 'VINCE, BE COOL', 'OF LUV'].map((track, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-4 border border-black/10 hover:bg-black/[0.02] transition-colors">
                                     <div>
                                         <p className="text-sm font-medium">{track}</p>
-                                        <p className="text-xs opacity-40">REGGIE • 2025</p>
+                                        <p className="text-xs opacity-40">You Come Here Often? • 2025</p>
                                     </div>
                                     <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
                                         STREAM
@@ -269,9 +308,9 @@ const HawnestEPK = () => {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <div key={i} className="aspect-square bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center group cursor-pointer relative overflow-hidden">
-                                <Image className="w-12 h-12 text-zinc-400" />
+                        {pressKitPhotos.map((photo) => (
+                            <div key={photo.name} className="aspect-square flex items-center justify-center group cursor-pointer relative overflow-hidden">
+                                <GatsbyImage image={photo.image} alt={photo.name} className="text-zinc-400 w-full h-auto" />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                                     <Download className="w-6 h-6 text-black" />
                                 </div>
@@ -280,7 +319,7 @@ const HawnestEPK = () => {
                     </div>
 
                     <p className="text-xs mt-4 opacity-40">
-                        High-resolution images available for download. Photo credit: [Photographer Name]
+                        High-resolution images available for download. Photo Credit: Jake Wickersham
                     </p>
                 </section>
 
@@ -315,15 +354,15 @@ const HawnestEPK = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
                             <h3 className="text-sm font-medium mb-2">PRESS INQUIRIES</h3>
-                            <p className="text-sm mb-1">Email: <a href="mailto:press@hawnest.com" className="hover:opacity-60 transition-opacity">press@hawnest.com</a></p>
+                            <p className="text-sm mb-1">Email: <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-60 transition-opacity">hawnestmusic@gmail.com</a></p>
                         </div>
                         <div>
                             <h3 className="text-sm font-medium mb-2">BOOKING</h3>
-                            <p className="text-sm mb-1">Email: <a href="mailto:booking@hawnest.com" className="hover:opacity-60 transition-opacity">booking@hawnest.com</a></p>
+                            <p className="text-sm mb-1">Email: <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-60 transition-opacity">hawnestmusic@gmail.com</a></p>
                         </div>
                         <div>
                             <h3 className="text-sm font-medium mb-2">GENERAL</h3>
-                            <p className="text-sm mb-1">Email: <a href="mailto:contact@hawnest.com" className="hover:opacity-60 transition-opacity">contact@hawnest.com</a></p>
+                            <p className="text-sm mb-1">Email: <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-60 transition-opacity">hawnestmusic@gmail.com</a></p>
                         </div>
                         <div>
                             <h3 className="text-sm font-medium mb-2">MANAGEMENT</h3>
