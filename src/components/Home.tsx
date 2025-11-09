@@ -653,7 +653,7 @@ const HawnestAudioPlayer = () => {
               <div className="mt-6 p-6 bg-zinc-100/50 border border-black/5 space-y-2">
                 <div className="flex items-center justify-between mb-4">
                   <button
-                    onClick={appContext.ResetToDefaults}
+                    onClick={() => {appContext.ResetToDefaults(); appContext.ResetTimingInfo()}}
                     className="text-xs tracking-wider px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all"
                   >
                     RESET TO DEFAULT
@@ -1032,7 +1032,7 @@ const HawnestAudioPlayer = () => {
                   </div>
                 )}
               </div>
-              <div className="text-xs tracking-wider opacity-40">{appContext?.SelectedAudio ? Math.floor(appContext?.SelectedAudio?.Duration / 60) + ":" + Math.round(appContext?.SelectedAudio?.Duration % 60).toString() : '-'}</div>
+              <div className="text-xs tracking-wider opacity-40">{appContext?.SelectedAudio ? Math.floor(appContext?.SelectedAudio?.Duration / 60) + ":" + Math.round(appContext?.SelectedAudio?.Duration % 60).toString().padStart(2, "0") : '-'}</div>
             </div>
           </div>
 

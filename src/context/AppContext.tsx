@@ -63,6 +63,7 @@ export interface IAppContext {
 	HandleTempoLevel(event: Event, value: number): void;
 	ResetToDefaults(): void;
 	ResetVolumeLevels(): void;
+	ResetTimingInfo(): void;
 	SetDisplayTutorialDialog(displayTutorialDialog: boolean): void;
 	SetDisplayTrainingModules(displayTrainingModules: boolean[]): void;
 }
@@ -228,14 +229,14 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	}, []);
 
 	const setEffectsChain = (randomizeEffects: boolean): void => {
-		const distValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : distortionLevel;
-		const feedbackDelayValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : feedbackDelayLevel;
-		const vibratoValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : vibratoLevel;
-		const chorusValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : chorusLevel;
-		const pitchValue: number = randomizeEffects ? Math.floor(Math.random() * (12 - -12 + 1)) + -12 : pitchLevel;
-		const reverbValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : reverbLevel;
-		const lowPassFilterValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : lowPassFilterLevel;
-		const phaserValue: number = randomizeEffects ? Math.floor(Math.random() * 100) : phaserLevel;
+		const distValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : 0;
+		const feedbackDelayValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : 0;
+		const vibratoValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : 0;
+		const chorusValue: number = randomizeEffects ? Math.floor(Math.random() * (25 - 0 + 1) + 0) : 0;
+		const pitchValue: number = randomizeEffects ? Math.floor(Math.random() * (12 - -12 + 1)) + -12 : 0;
+		const reverbValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : 0;
+		const lowPassFilterValue: number = randomizeEffects ? Math.floor(Math.random() * 33) : 0;
+		const phaserValue: number = randomizeEffects ? Math.floor(Math.random() * 100) : 0;
 
 		let tempDistortion = new Tone.Distortion(0);
 		tempDistortion.wet.value = distValue / 100;
@@ -304,6 +305,11 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			// 2. Ensure audio context is started
 			await Tone.start();
 
+			if (Tone.context.state !== 'running') {
+				console.warn('AudioContext not running, attempting to resume...');
+				await Tone.context.resume();
+			}
+
 			// 3. Stop and dispose current playback
 			if (playerRef.current) {
 				try {
@@ -361,7 +367,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 				}
 			}
 
-			const tempoValue = randomizeEffects ? Math.random() * (1.4 - 0.6 + 1) + 0.6 : tempoLevel;
+			const tempoValue = randomizeEffects ? Math.random() * (1.4 - 0.6 + 1) + 0.6 : 1;
 
 			if (audio.Stems?.length > 0) {
 				console.log('Loading stems:', audio.Stems.length);
@@ -497,10 +503,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 				}).toDestination();
 			}
 
-			if (randomizeEffects) {
-				setTempoLevel(tempoValue);
-				setVisualTempoLevel(tempoValue);
-			}
+			setTempoLevel(tempoValue);
+			setVisualTempoLevel(tempoValue);
 
 			const recorder = new Tone.Recorder();
 			recorderRef.current = recorder;
@@ -516,43 +520,54 @@ export const AppContextProvider = (props: IAppContextProps) => {
 	};
 
 	const resetToDefaults = (): void => {
-		let tempAudio: IAudio = { ...selectedAudio };
-
-		distortionEffect.wet.value = 0;
+		distortionEffect?.set({ distortion: 0 });
 		setDistortionLevel(0);
 		setDistortionEffect(distortionEffect);
 
-		pitchEffect.pitch = 0;
+		pitchEffect?.set({ pitch: 0 });
 		setPitchLevel(0);
 		setPitchEffect(pitchEffect);
 
-		feedbackDelayEffect.wet.value = 0;
+		feedbackDelayEffect?.set({ wet: 0 });
 		setFeedbackDelayLevel(0);
 		setFeedbackDelayEffect(feedbackDelayEffect);
 
-		chorusEffect.wet.value = 0;
+		chorusEffect?.set({ wet: 0 });
 		setChorusLevel(0);
 		setChorusEffect(chorusEffect);
 
-		vibratoEffect.wet.value = 0;
+		vibratoEffect?.set({ wet: 0 });
 		setVibratoLevel(0);
 		setVibratoEffect(vibratoEffect);
 
-		lowPassFilterEffect.wet.value = 0;
+		lowPassFilterEffect?.set({ wet: 0 });
 		setLowPassFilterLevel(0);
 		setLowPassFilterEffect(lowPassFilterEffect);
 
-		reverbEffect.wet.value = 0;
+		reverbEffect?.set({ wet: 0 });
 		setReverbLevel(0);
 		setReverbEffect(reverbEffect);
 
-		phaserEffect.wet.value = 0;
+		phaserEffect?.set({ wet: 0 });
 		setPhaserLevel(0);
 		setPhaserEffect(phaserEffect);
 
-		if (selectedAudio.Stems.length > 0) {
+		setTempoLevel(1);
+		setVisualTempoLevel(1);
+	};
+
+	const resetTimingInfo = (): void => {
+		let tempAudio: IAudio = { ...selectedAudio };
+		const updatedDuration: number = (tempoLevel / 1) * selectedAudio.Duration;
+		const timestampRatio: number = playerTimestamp / selectedAudio.Duration;
+		let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
+
+		Tone.getTransport().clear(selectedAudio.CurrentTimestampEventId);
+		Tone.getTransport().seconds = updatedTimestamp;
+
+		if (selectedAudio?.Stems.length > 0) {
 			let duration: number = 0;
-			selectedAudio.Stems.forEach((stem) => {
+			selectedAudio?.Stems.forEach((stem) => {
 				playerRef.current.player(stem.Name).playbackRate = 1;
 				if (playerRef.current.player(stem.Name).buffer.duration > duration) {
 					duration = playerRef.current.player(stem.Name).buffer.duration;
@@ -561,15 +576,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			tempAudio.Duration = duration;
 		} else {
 			playerRef.current.playbackRate = 1;
-			tempAudio.Duration = playerRef.current.buffer.duration;
+			tempAudio.Duration = playerRef.current?.buffer?.duration;
 		}
-
-		const updatedDuration: number = (tempoLevel / 1) * selectedAudio.Duration;
-		const timestampRatio: number = playerTimestamp / selectedAudio.Duration;
-		let updatedTimestamp: number = Math.round(timestampRatio * updatedDuration);
-
-		Tone.getTransport().clear(selectedAudio.CurrentTimestampEventId);
-		Tone.getTransport().seconds = updatedTimestamp;
 
 		let currentTimestampEventId: number = Tone.getTransport().scheduleRepeat(
 			() => {
@@ -582,8 +590,6 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 		tempAudio.CurrentTimestampEventId = currentTimestampEventId;
 		setPlayerTimestamp(updatedTimestamp);
-
-		setTempoLevel(1);
 		setVisualTempoLevel(1);
 		setSelectedAudio(tempAudio);
 	};
@@ -757,6 +763,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		HandleTempoLevel: handleTempoLevel,
 		ResetToDefaults: resetToDefaults,
 		ResetVolumeLevels: resetVolumeLevels,
+		ResetTimingInfo: resetTimingInfo,
 		SetDisplayTutorialDialog: setDisplayTutorialDialog,
 		SetDisplayTrainingModules: setDisplayTrainingModules
 	};

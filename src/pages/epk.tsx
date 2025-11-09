@@ -353,17 +353,17 @@ const HawnestEPK = () => {
                     <h2 className="text-xs tracking-wider opacity-60 mb-6">CONTACT</h2>
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
-                            <h3 className="text-sm font-medium mb-2">PRESS INQUIRIES</h3>
+                            <h3 className="text-sm font-medium mb-2">PRESS INQUIRIES / BOOKING / GENERAL</h3>
                             <p className="text-sm mb-1">Email: <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-60 transition-opacity">hawnestmusic@gmail.com</a></p>
                         </div>
-                        <div>
+                        {/* <div>
                             <h3 className="text-sm font-medium mb-2">BOOKING</h3>
                             <p className="text-sm mb-1">Email: <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-60 transition-opacity">hawnestmusic@gmail.com</a></p>
                         </div>
                         <div>
                             <h3 className="text-sm font-medium mb-2">GENERAL</h3>
                             <p className="text-sm mb-1">Email: <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-60 transition-opacity">hawnestmusic@gmail.com</a></p>
-                        </div>
+                        </div> */}
                         <div>
                             <h3 className="text-sm font-medium mb-2">MANAGEMENT</h3>
                             <p className="text-sm mb-1">Currently self-managed</p>
