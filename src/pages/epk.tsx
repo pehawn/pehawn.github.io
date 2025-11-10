@@ -168,7 +168,7 @@ const HawnestEPK = () => {
                                 <h2 className="text-xs tracking-wider opacity-60 mb-3">LINKS</h2>
                                 <div className="flex flex-wrap gap-2">
                                     <a
-                                        href="https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn" 
+                                        href="https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
@@ -177,7 +177,7 @@ const HawnestEPK = () => {
                                         Spotify
                                     </a>
                                     <a
-                                        href="https://music.apple.com/us/artist/hawnest/1842981468" 
+                                        href="https://music.apple.com/us/artist/hawnest/1842981468"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
@@ -186,8 +186,8 @@ const HawnestEPK = () => {
                                         Apple Music
                                     </a>
                                     <a
-                                        href="https://www.instagram.com/hawnest_" 
-                                        target="_blank" 
+                                        href="https://www.instagram.com/hawnest_"
+                                        target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
                                     >
@@ -196,6 +196,8 @@ const HawnestEPK = () => {
                                     </a>
                                     <a
                                         href="https://hawnest.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-1"
                                     >
                                         <ExternalLink className="w-3 h-3" />
@@ -212,20 +214,23 @@ const HawnestEPK = () => {
                     <h2 className="text-xs tracking-wider opacity-60 mb-6">BIOGRAPHY</h2>
                     <div className="space-y-4 text-sm leading-relaxed">
                         <p>
-                            Hawnest is an independent artist exploring the intersection of sound, technology, and natural aesthetics.
-                            Based in Kansas City, Missouri, the project represents a unique approach to modern music production that
-                            pushes boundaries while maintaining an organic, earth-rooted sensibility.
+                            Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production 
+                            techniques. A self-proclaimed late bloomer, Hawnest began their musical journey at 23, after completing formal education 
+                            and confronting an existential void. Starting with an acoustic guitar gifted by their late father and progressing into production work, 
+                            Hawnest has sifted through years of musical exploration and is now ready to share a glimpse of their artistic evolution.
                         </p>
                         <p>
-                            The debut album "REGGIE" (2025) showcases Hawnest's signature sound: experimental electronic textures
-                            layered with ambient soundscapes and carefully crafted audio manipulation. Each track serves as an
-                            exploration of sonic possibilities, utilizing advanced production techniques including stem isolation,
-                            real-time effects processing, and looping mechanics.
+                            The debut EP, <i>You Come Here Often?</i> (2025), presents genre bending soundscapes inspired by early 2000s sampling, 
+                            folk infused R&B, and indie pop. Each track is an exploration of modern relationships, both casual and romantic, through the
+                            eyes of an introspective bystander who occasionally comes off the bench to participate. The project was recorded independently 
+                            in Hawnest's studio apartment in North Kansas City, giving the EP a deeply personal and intimate sound.
                         </p>
                         <p>
-                            Drawing inspiration from the natural world while embracing cutting-edge technology, Hawnest creates
-                            immersive audio experiences that challenge traditional genre boundaries. The project represents a
-                            forward-thinking approach to independent music in the digital age.
+                            Drawing inspiration from artists like Dijon, Bon Iver, Nourished By Time, and Frank Ocean, Hawnest is looking to continue
+                            the sonic narrative these creatives have cultivated. To complement the music, Hawnest developed a web audio player 
+                            <a href="https://hawnest.com" target="_blank">(https://hawnest.com)</a> that allows fans to remix and reimagine released 
+                            and unreleased tracks. Users can tweak parameters such as tempo, pitch, reverb, delay, playback mode (forward/reverse), and stem isolation, 
+                            creating a highly interactive listening experience. All commercially released music is available for playback via this web player.
                         </p>
                     </div>
 
@@ -233,12 +238,12 @@ const HawnestEPK = () => {
                     <div className="mt-8 p-6 bg-zinc-100/50 border border-black/5">
                         <h3 className="text-xs tracking-wider opacity-60 mb-3">SHORT BIO (100 WORDS)</h3>
                         <p className="text-sm leading-relaxed">
-                            Hawnest is a Kansas City-based experimental electronic artist blending ambient soundscapes with
-                            innovative production techniques. The 2025 debut album "REGGIE" showcases a unique approach to
-                            modern music-making, featuring stem isolation, real-time effects, and organic textures. Drawing
-                            from both natural and technological influences, Hawnest creates immersive audio experiences that
-                            push the boundaries of contemporary electronic music while maintaining an accessible, earth-toned
-                            aesthetic.
+                            Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production techniques
+                            to contextualize modern relationships. The 2025 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
+                            accessible to casual listeners. Drawing inspiration from artists like Dijon, Bon Iver, Nourished By Time, and Frank Ocean, Hawnest looks to build upon
+                            the sonic narrative these creatives have cultivated. To complement the music, Hawnest developed a web audio
+                            player <a href="https://hawnest.com" target="_blank">(https://hawnest.com)</a> to expand upon both released and unreleased music. The player
+                            allows users to remix and create new versions of their favorite songs.
                         </p>
                     </div>
                 </section>
@@ -301,52 +306,84 @@ const HawnestEPK = () => {
                 <section className="mb-16 pb-16 border-b border-black/10">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xs tracking-wider opacity-60">PRESS PHOTOS</h2>
-                        <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-2">
-                            <Download className="w-3 h-3" />
-                            DOWNLOAD ALL
-                        </button>
+                        <a href="https://drive.google.com/file/d/1TpYadDPodQ2d0GeGyqyVy1z7kyDsZLNX/view?usp=sharing" target="_blank">
+                            <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all flex items-center gap-2">
+                                <Download className="w-3 h-3" />
+                                DOWNLOAD ALL
+                            </button>
+                        </a>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {pressKitPhotos.map((photo) => (
                             <div key={photo.name} className="aspect-square flex items-center justify-center group cursor-pointer relative overflow-hidden">
                                 <GatsbyImage image={photo.image} alt={photo.name} className="text-zinc-400 w-full h-auto" />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                    <Download className="w-6 h-6 text-black" />
-                                </div>
+                                <a href={`/images/${photo.name}.jpg`} download>
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                        <Download className="w-6 h-6 text-black" />
+                                    </div>
+                                </a>
                             </div>
                         ))}
                     </div>
 
                     <p className="text-xs mt-4 opacity-40">
-                        High-resolution images available for download. Photo Credit: Jake Wickersham
+                        High-resolution images available for download. Photo Credit: Jake Wickersham <a href="https://www.jakewickersham.com" target="_blank">(https://www.jakewickersham.com)</a>
                     </p>
                 </section>
 
                 {/* Technical Requirements (for live shows) */}
+                {/* Technical Requirements (for live shows) */}
                 <section className="mb-16 pb-16 border-b border-black/10">
                     <h2 className="text-xs tracking-wider opacity-60 mb-6">TECHNICAL REQUIREMENTS</h2>
-                    <div className="grid md:grid-cols-2 gap-6">
+
+                    <div className="grid md:grid-cols-3 gap-6">
                         <div>
                             <h3 className="text-sm font-medium mb-3">STAGE SETUP</h3>
                             <ul className="text-sm space-y-2 opacity-80">
-                                <li>• Audio interface with minimum 4 outputs</li>
-                                <li>• Quality monitoring system</li>
-                                <li>• Dedicated mixing console access</li>
-                                <li>• Stage space: 10' x 10' minimum</li>
+                                <li>• Minimum stage space: 16' x 12'</li>
+                                <li>• 5 musicians: lead vocals/rhythm guitar, lead guitar, bass, drums, keys/sampler (all with backing vocals)</li>
+                                <li>• Access to front-of-house mixing console</li>
+                                <li>• 5 vocal microphones with stands</li>
+                                <li>• 4 instrument microphones or DIs (for guitars, bass, keys, etc.)</li>
+                                <li>• 4 monitor wedges (or individual IEM feeds if available)</li>
+                                <li>• Power: minimum 6 grounded outlets (2 stage left, 2 stage right, 2 upstage center)</li>
                             </ul>
                         </div>
+
                         <div>
                             <h3 className="text-sm font-medium mb-3">BACKLINE</h3>
                             <ul className="text-sm space-y-2 opacity-80">
-                                <li>• MIDI controller (provided by artist)</li>
-                                <li>• Laptop stand</li>
-                                <li>• Power outlets: 2 minimum</li>
-                                <li>• XLR cables for output</li>
+                                <li>• Full drum kit (kick, snare, 3 toms, hi-hat, crash, ride) (or artist provided)</li>
+                                <li>• Guitar amplifiers (x2) and bass amplifier</li>
+                                <li>• Audio interface with minimum 4 outputs (artist provided)</li>
+                                <li>• 3–4 DI boxes (for bass, synths, laptop playback)</li>
+                                <li>• XLR cables for outputs to FOH</li>
+                                <li>• Optional: small table for pedals or MIDI controllers</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 className="text-sm font-medium mb-3">CHANNEL LIST</h3>
+                            <ul className="text-sm space-y-2 opacity-80">
+                                <li>1 – Kick</li>
+                                <li>2 – Snare</li>
+                                <li>3 – Overheads (L/R)</li>
+                                <li>4 – Bass DI</li>
+                                <li>5 – Rhythm Guitar</li>
+                                <li>6 – Lead Guitar</li>
+                                <li>7 – Keys/Synth L</li>
+                                <li>8 – Keys/Synth R</li>
+                                <li>9 – Sampler (stereo)</li>
+                                <li>10 – Lead Vocal</li>
+                                <li>11 – BV 1 (Guitar)</li>
+                                <li>12 – BV 2 (Bass)</li>
+                                <li>13 – BV 3 (Drums)</li>
                             </ul>
                         </div>
                     </div>
                 </section>
+
 
                 {/* Contact */}
                 <section>
