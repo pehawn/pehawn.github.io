@@ -93,7 +93,7 @@ const HawnestEPK = () => {
 
                     <p className="text-xs text-center opacity-40 mt-8">
                         This is a private press kit. If you need access, please contact:<br />
-                        <a href="mailto:press@hawnest.com" className="hover:opacity-100 transition-opacity">press@hawnest.com</a>
+                        <a href="mailto:hawnestmusic@gmail.com" className="hover:opacity-100 transition-opacity">hawnestmusic@gmail.com</a>
                     </p>
                 </div>
             </div>
@@ -227,8 +227,7 @@ const HawnestEPK = () => {
                         </p>
                         <p>
                             Drawing inspiration from artists like Dijon, Bon Iver, Nourished By Time, and Frank Ocean, Hawnest is looking to continue
-                            the sonic narrative these creatives have cultivated. To complement the music, Hawnest developed a web audio player 
-                            <a href="https://hawnest.com" target="_blank">(https://hawnest.com)</a> that allows fans to remix and reimagine released 
+                            the sonic narrative these creatives have cultivated. To complement the music, Hawnest developed a web audio player <a href="https://hawnest.com" target="_blank">(https://hawnest.com)</a> that allows fans to remix and reimagine released 
                             and unreleased tracks. Users can tweak parameters such as tempo, pitch, reverb, delay, playback mode (forward/reverse), and stem isolation, 
                             creating a highly interactive listening experience. All commercially released music is available for playback via this web player.
                         </p>
@@ -262,16 +261,16 @@ const HawnestEPK = () => {
                                 <h3 className="text-2xl font-light tracking-wide mb-2">You Come Here Often?</h3>
                                 <p className="text-xs tracking-wider opacity-60 mb-4">EP • 2025 • 4 TRACKS</p>
                                 <p className="text-sm leading-relaxed mb-4">
-                                    The debut EP from Hawnest explores pop and R&B influences through four carefully crafted
-                                    tracks. Each song showcases advanced audio manipulation techniques while maintaining
-                                    organic, natural aesthetics.
+                                    The debut EP, <i>You Come Here Often?</i> (2025), presents genre bending soundscapes inspired by early 2000s sampling, folk infused R&B, and indie pop. 
+                                    Each track is an exploration of modern relationships, both casual and romantic, through the eyes of an introspective bystander who occasionally comes 
+                                    off the bench to participate.
                                 </p>
                                 <div className="flex gap-2">
                                     <a
                                         href="https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all"
+                                        className="flex items-center text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all "
                                     >
                                         SPOTIFY
                                     </a>

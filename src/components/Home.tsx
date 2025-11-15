@@ -363,7 +363,10 @@ const HawnestAudioPlayer = () => {
                   <div>
                     <h3 className="text-sm tracking-wider opacity-60 mb-2">ABOUT</h3>
                     <p className="text-sm leading-relaxed">
-                      Hawnest is an independent artist currently residing in Kansas City, Missouri. Their music explores themes of nostalgia, longing, and impermanence through a blend of electronic and organic sounds. Drawing inspiration from genres such as Indie Pop, R&B, and Hip Hop, Hawnest crafts immersive soundscapes that invite listeners to reflect and introspect.
+                      Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production techniques
+                      to contextualize modern relationships. The 2025 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
+                      accessible to casual listeners. Drawing inspiration from artists like Dijon, Bon Iver, Nourished By Time, and Frank Ocean, Hawnest looks to build upon
+                      the sonic narrative these creatives have cultivated.
                     </p>
                   </div>
                   <div>
@@ -653,7 +656,7 @@ const HawnestAudioPlayer = () => {
               <div className="mt-6 p-6 bg-zinc-100/50 border border-black/5 space-y-2">
                 <div className="flex items-center justify-between mb-4">
                   <button
-                    onClick={() => {appContext.ResetToDefaults(); appContext.ResetTimingInfo()}}
+                    onClick={() => { appContext.ResetToDefaults(); appContext.ResetTimingInfo() }}
                     className="text-xs tracking-wider px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all"
                   >
                     RESET TO DEFAULT
