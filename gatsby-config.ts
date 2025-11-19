@@ -3,7 +3,7 @@ import type { GatsbyConfig } from "gatsby";
 const config: GatsbyConfig = {
 	siteMetadata: {
 		title: `Hawnest`,
-		description: `Singer/Songwriter based in Kansas City`,
+		description: `Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production techniques to contextualize modern relationships.`,
 		keywords: ["Hawnest", "Patrick Hawn", "Music", "Portfolio", "Singer", "Songwriter", "Kansas City", "Producer", "Software Developer", "Programmer"],
 		siteUrl: `https://hawnest.com/`,
 		twitterUsername: ``,
