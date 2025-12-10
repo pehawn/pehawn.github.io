@@ -7,7 +7,15 @@ const config: GatsbyConfig = {
 		keywords: ["Hawnest", "Patrick Hawn", "Music", "Portfolio", "Singer", "Songwriter", "Kansas City", "Producer", "Software Developer", "Programmer"],
 		siteUrl: `https://hawnest.com/`,
 		twitterUsername: ``,
-		image: ``
+		image: `images/5.jpg`,
+		genres: ["Indie Pop", "R&B", "Electronic", "Lo-fi"],
+		sameAs: [
+			"https://www.instagram.com/hawnest_/",
+			"https://open.spotify.com/artist/3h3LNc3azuPly6IhUnevmn",
+			"https://music.apple.com/us/artist/hawnest/1842981468",
+			"https://www.youtube.com/@hawn_est",
+			"https://musicbrainz.org/artist/237fc65a-ca88-4591-96fa-cceae9a230f9"
+		]
 	},
 	// More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
 	// If you use VSCode you can also use the GraphQL plugin

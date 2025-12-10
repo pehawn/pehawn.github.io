@@ -11,6 +11,8 @@ const useSiteMetadata = (): any => {
 					siteUrl
 					twitterUsername
 					image
+					genres
+					sameAs
 				}
 			}
 		}

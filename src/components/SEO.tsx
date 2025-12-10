@@ -9,7 +9,7 @@ interface ISEOProps {
 }
 
 export const SEO: React.FunctionComponent<ISEOProps> = (props): JSX.Element => {
-	const { title: defaultTitle, description: defaultDescription, keywords, image, siteUrl, twitterUsername } = useSiteMetadata();
+	const { title: defaultTitle, description: defaultDescription, keywords, image, siteUrl, twitterUsername, genres, sameAs } = useSiteMetadata();
 
 	const seo = {
 		title: props.title || defaultTitle,
@@ -17,7 +17,18 @@ export const SEO: React.FunctionComponent<ISEOProps> = (props): JSX.Element => {
 		keywords: keywords.join(", "),
 		image: `${siteUrl}${image}`,
 		url: `${siteUrl}${props.pathName || ``}`,
-		twitterUsername
+		twitterUsername,
+	};
+
+	const musicGroupSchema = {
+		"@context": "https://schema.org",
+		"@type": "MusicGroup",
+		name: defaultTitle,
+		url: siteUrl,
+		image: `${siteUrl}${image}`,
+		description: defaultDescription,
+		genre: genres,
+		sameAs: sameAs
 	};
 
 	return (
@@ -33,6 +44,11 @@ export const SEO: React.FunctionComponent<ISEOProps> = (props): JSX.Element => {
 			<meta name="twitter:image" content={seo.image} />
 			<meta name="twitter:creator" content={seo.twitterUsername} />
 			<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>👤</text></svg>" />
+
+			{/* Auto-injected JSON-LD Schema used for web crawlers to support Google Knowledge */}
+			<script type="application/ld+json">
+				{JSON.stringify(musicGroupSchema)}
+			</script>
 			{props.children}
 		</>
 	);
