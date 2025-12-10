@@ -15,7 +15,7 @@ export const SEO: React.FunctionComponent<ISEOProps> = (props): JSX.Element => {
 		title: props.title || defaultTitle,
 		description: props.description || defaultDescription,
 		keywords: keywords.join(", "),
-		image: `${siteUrl}${image}`,
+		image: `${siteUrl}/${image}`,
 		url: `${siteUrl}${props.pathName || ``}`,
 		twitterUsername,
 	};
