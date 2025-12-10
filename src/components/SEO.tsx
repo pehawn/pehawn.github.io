@@ -25,7 +25,7 @@ export const SEO: React.FunctionComponent<ISEOProps> = (props): JSX.Element => {
 		"@type": "MusicGroup",
 		name: defaultTitle,
 		url: siteUrl,
-		image: `${siteUrl}${image}`,
+		image: `${siteUrl}/${image}`,
 		description: defaultDescription,
 		genre: genres,
 		sameAs: sameAs
