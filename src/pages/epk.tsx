@@ -4,11 +4,12 @@ import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import { graphql, useStaticQuery } from "gatsby";
 
 const HawnestEPK = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    /*const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState('');*/
     const [mainPhoto, setMainPhoto] = useState(null);
     const [pressKitPhotos, setPressKitPhotos] = useState([]);
+    const [featuredRelease, setFeaturedRelease] = useState(null);
 
     const data = useStaticQuery(graphql`
          query {
@@ -28,6 +29,14 @@ const HawnestEPK = () => {
                }
              }
            }
+           images: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+             nodes {
+               name
+               childImageSharp {
+                 gatsbyImageData(width: 400, placeholder: BLURRED)
+               }
+             }
+           }
          }
         `);
 
@@ -39,12 +48,14 @@ const HawnestEPK = () => {
             name: node.name,
             image: getImage(node.childImageSharp),
         })));
+        const featuredReleaseNode = data.images.nodes.find(node => node.name === 'YouComeHereOften');
+        setFeaturedRelease({ image: getImage(featuredReleaseNode?.childImageSharp), name: featuredReleaseNode?.name });
     }, [data])
 
     // Simple password protection - in production, use proper authentication
-    const correctPassword = 'hawnest2025';
+    //const correctPassword = 'hawnest2026';
 
-    const handlePasswordSubmit = (e) => {
+    /*const handlePasswordSubmit = (e) => {
         e.preventDefault();
         if (password === correctPassword) {
             setIsAuthenticated(true);
@@ -98,7 +109,7 @@ const HawnestEPK = () => {
                 </div>
             </div>
         );
-    }
+    }*/
 
     // Main EPK content
     return (
@@ -160,7 +171,7 @@ const HawnestEPK = () => {
 
                             <div>
                                 <h2 className="text-xs tracking-wider opacity-60 mb-2">LATEST RELEASE</h2>
-                                <p className="text-sm">You Come Here Often? (EP, 2025)</p>
+                                <p className="text-sm">You Come Here Often? (EP, 2026)</p>
                             </div>
 
                             {/* Social Links */}
@@ -220,7 +231,7 @@ const HawnestEPK = () => {
                             Hawnest has sifted through years of musical exploration and is now ready to share a glimpse of their artistic evolution.
                         </p>
                         <p>
-                            The debut EP, <i>You Come Here Often?</i> (2025), presents genre bending soundscapes inspired by early 2000s sampling, 
+                            The debut EP, <i>You Come Here Often?</i> (2026), presents genre bending soundscapes inspired by early 2000s sampling, 
                             folk infused R&B, and indie pop. Each track is an exploration of modern relationships, both casual and romantic, through the
                             eyes of an introspective bystander who occasionally comes off the bench to participate. The project was recorded independently 
                             in Hawnest's studio apartment in North Kansas City, giving the EP a deeply personal and intimate sound.
@@ -238,7 +249,7 @@ const HawnestEPK = () => {
                         <h3 className="text-xs tracking-wider opacity-60 mb-3">SHORT BIO (100 WORDS)</h3>
                         <p className="text-sm leading-relaxed">
                             Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production techniques
-                            to contextualize modern relationships. The 2025 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
+                            to contextualize modern relationships. The 2026 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
                             accessible to casual listeners. Drawing inspiration from artists like Dijon, Bon Iver, Nourished By Time, and Frank Ocean, Hawnest looks to build upon
                             the sonic narrative these creatives have cultivated. To complement the music, Hawnest developed a web audio
                             player <a href="https://hawnest.com" target="_blank">(https://hawnest.com)</a> to expand upon both released and unreleased music. The player
@@ -254,14 +265,15 @@ const HawnestEPK = () => {
                     {/* Featured Release */}
                     <div className="mb-8">
                         <div className="flex gap-6 items-start mb-4">
-                            <div className="w-32 h-32 bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-4xl font-light text-zinc-400 flex-shrink-0">
-                                R
+                            <div className="w-32 h-32">
+                                <GatsbyImage image={featuredRelease?.image} alt={featuredRelease?.name} className="w-full h-auto" />
                             </div>
+                            
                             <div className="flex-1">
                                 <h3 className="text-2xl font-light tracking-wide mb-2">You Come Here Often?</h3>
-                                <p className="text-xs tracking-wider opacity-60 mb-4">EP • 2025 • 4 TRACKS</p>
+                                <p className="text-xs tracking-wider opacity-60 mb-4">EP • 2026 • 4 TRACKS</p>
                                 <p className="text-sm leading-relaxed mb-4">
-                                    The debut EP, <i>You Come Here Often?</i> (2025), presents genre bending soundscapes inspired by early 2000s sampling, folk infused R&B, and indie pop. 
+                                    The debut EP, <i>You Come Here Often?</i> (2026), presents genre bending soundscapes inspired by early 2000s sampling, folk infused R&B, and indie pop. 
                                     Each track is an exploration of modern relationships, both casual and romantic, through the eyes of an introspective bystander who occasionally comes 
                                     off the bench to participate.
                                 </p>
@@ -290,7 +302,7 @@ const HawnestEPK = () => {
                                 <div key={idx} className="flex items-center justify-between p-4 border border-black/10 hover:bg-black/[0.02] transition-colors">
                                     <div>
                                         <p className="text-sm font-medium">{track}</p>
-                                        <p className="text-xs opacity-40">You Come Here Often? • 2025</p>
+                                        <p className="text-xs opacity-40">You Come Here Often? • 2026</p>
                                     </div>
                                     <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
                                         STREAM
@@ -411,7 +423,7 @@ const HawnestEPK = () => {
             {/* Footer */}
             <footer className="border-t border-black/10 mt-16">
                 <div className="max-w-5xl mx-auto px-6 py-8 text-xs text-center opacity-40">
-                    <p>© 2025 Hawnest • All Rights Reserved</p>
+                    <p>© 2026 Hawnest • All Rights Reserved</p>
                     <p className="mt-2">This electronic press kit is for media and promotional use only.</p>
                 </div>
             </footer>

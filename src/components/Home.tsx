@@ -364,7 +364,7 @@ const HawnestAudioPlayer = () => {
                     <h3 className="text-sm tracking-wider opacity-60 mb-2">ABOUT</h3>
                     <p className="text-sm leading-relaxed">
                       Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production techniques
-                      to contextualize modern relationships. The 2025 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
+                      to contextualize modern relationships. The 2026 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
                       accessible to casual listeners. Drawing inspiration from artists like Dijon, Bon Iver, Nourished By Time, and Frank Ocean, Hawnest looks to build upon
                       the sonic narrative these creatives have cultivated.
                     </p>
@@ -373,7 +373,7 @@ const HawnestAudioPlayer = () => {
                     <h3 className="text-sm tracking-wider opacity-60 mb-2">CREDITS</h3>
                     <p className="text-sm leading-relaxed">
                       All tracks written, produced, and performed by Hawnest<br />
-                      Recorded at various locations across 2022-2025<br />
+                      Recorded at various locations across 2022-2026<br />
                       Mixed by Martin Cooke, Spencer Hoad<br />
                       Mastered by Simon Lancelot
                     </p>
