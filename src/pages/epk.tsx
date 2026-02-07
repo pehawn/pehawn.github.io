@@ -246,7 +246,7 @@ const HawnestEPK = () => {
 
                     {/* Short Bio */}
                     <div className="mt-8 p-6 bg-zinc-100/50 border border-black/5">
-                        <h3 className="text-xs tracking-wider opacity-60 mb-3">SHORT BIO (100 WORDS)</h3>
+                        <h3 className="text-xs tracking-wider opacity-60 mb-3">SHORT BIO</h3>
                         <p className="text-sm leading-relaxed">
                             Hawnest is a Kansas City, Missouri based independent artist blending traditional songwriting with electronic production techniques
                             to contextualize modern relationships. The 2026 debut EP <i>You Come Here Often?</i> showcases genre bending soundscapes
@@ -284,11 +284,13 @@ const HawnestEPK = () => {
                                         rel="noopener noreferrer"
                                         className="flex items-center text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all "
                                     >
-                                        SPOTIFY
+                                        COMING SOON
                                     </a>
-                                    <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
-                                        DOWNLOAD PRESSKIT
-                                    </button>
+                                    <a href="https://drive.google.com/file/d/1jvRFbDByxel1bCK949G0ZIn-pSDamaku/view?usp=sharing" target="_blank" rel="noopener noreferrer">
+                                        <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
+                                            DOWNLOAD PRESSKIT
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -298,15 +300,21 @@ const HawnestEPK = () => {
                     <div>
                         <h3 className="text-xs tracking-wider opacity-60 mb-4">FEATURED TRACKS</h3>
                         <div className="space-y-3">
-                            {['REGGIE', 'VINCE, BE COOL', 'OF LUV'].map((track, idx) => (
+                            {[{ name: 'REGGIE', link: "https://open.spotify.com/album/5EToUjgL4DD57DNjXAHWyI?si=hdl0BWQ5QUWGuXlH51BL6Q", releaseStatus: "STREAM" }, { name: 'VINCE, BE COOL', link: "", releaseStatus: "COMING SOON" }, { name: 'OF LUV', link: "", releaseStatus: "COMING SOON" }].map((track, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-4 border border-black/10 hover:bg-black/[0.02] transition-colors">
                                     <div>
-                                        <p className="text-sm font-medium">{track}</p>
+                                        <p className="text-sm font-medium">{track.name}</p>
                                         <p className="text-xs opacity-40">You Come Here Often? • 2026</p>
                                     </div>
-                                    <button className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
-                                        STREAM
-                                    </button>
+                                    <a
+                                        href={track.link}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                    >
+                                        <button disabled={track.releaseStatus === "COMING SOON"} className="text-xs px-3 py-1.5 border border-black/10 rounded-full hover:bg-black hover:text-white transition-all">
+                                            {track.releaseStatus}
+                                        </button>
+                                    </a>
                                 </div>
                             ))}
                         </div>
