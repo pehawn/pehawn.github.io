@@ -148,8 +148,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 					let albumArt = getImage(imageNode?.childImageSharp);
 
 					let foundAudio: IAudio = {
-						Name: audio.name,
-						FullName: data?.frontmatter?.title,
+						Name: audio.name.replaceAll("_", " "),
+						FullName: data?.frontmatter?.title.replaceAll("_", " "),
 						Path: audio.publicURL,
 						Stems: [],
 						Order: data?.frontmatter?.order,

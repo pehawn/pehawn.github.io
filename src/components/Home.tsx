@@ -435,7 +435,7 @@ const HawnestAudioPlayer = () => {
               <span className="text-[10px]">▼</span>
             </button>
             {showAlbumDropdown && (
-              <div className="absolute top-full left-0 mt-2 bg-zinc-50 border border-black/10 shadow-lg min-w-[200px]">
+              <div className="absolute top-full left-0 mt-2 bg-zinc-50 border border-black/10 shadow-lg min-w-[250px]">
                 {appContext?.Albums.map((album) => (
                   <button
                     key={album.Name}
@@ -908,7 +908,7 @@ const HawnestAudioPlayer = () => {
                         RANDOMIZE
                       </button>
                     </div>
-                    <div className="text-xs tracking-wider opacity-40 w-12 text-right flex-shrink-0">{song?.Duration?.toString().replaceAll(".", ":")}</div>
+                    <div className="text-xs tracking-wider opacity-40 w-12 text-right flex-shrink-0">{song?.Duration.toString().split(".")[0]}:{song?.Duration?.toString().split(".")[1].padEnd(2, '0')}</div>
                   </div>
                 </div>
 
