@@ -156,7 +156,7 @@ export const AppContextProvider = (props: IAppContextProps) => {
 						Duration: data?.frontmatter?.duration
 					};
 
-					if (data?.frontmatter?.album && !foundAlbums.includes(data?.frontmatter?.album)) {
+					if (data?.frontmatter?.album && foundAlbums.findIndex((album) => album.Name === data?.frontmatter?.album) === -1) {
 						const album: IAlbum = {
 							Name: data?.frontmatter?.album,
 							ReleaseDate: new Date(data?.frontmatter?.date),
@@ -262,25 +262,29 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		let tempPhaser = new Tone.Phaser();
 		tempPhaser.wet.value = phaserValue / 100;
 
-		if (randomizeEffects) {
-			setPitchLevel(pitchValue);
-			setFeedbackDelayLevel(feedbackDelayValue);
-			setVibratoLevel(vibratoValue);
-			setChorusLevel(chorusValue);
-			setDistortionLevel(distValue);
-			setLowPassFilterLevel(lowPassFilterValue);
-			setReverbLevel(reverbValue);
-			setPhaserLevel(phaserValue);
-		}
+		React.startTransition(() => {
+			if (randomizeEffects) {
+				setPitchLevel(pitchValue);
+				setFeedbackDelayLevel(feedbackDelayValue);
+				setVibratoLevel(vibratoValue);
+				setChorusLevel(chorusValue);
+				setDistortionLevel(distValue);
+				setLowPassFilterLevel(lowPassFilterValue);
+				setReverbLevel(reverbValue);
+				setPhaserLevel(phaserValue);
+			}
+		});
 
-		setDistortionEffect(tempDistortion);
-		setPitchEffect(tempPitch);
-		setFeedbackDelayEffect(tempFeedbackDelay);
-		setVibratoEffect(tempVibrato);
-		setChorusEffect(tempChorus);
-		setLowPassFilterEffect(tempLowPassFilter);
-		setReverbEffect(tempReverb);
-		setPhaserEffect(tempPhaser);
+		React.startTransition(() => {
+			setDistortionEffect(tempDistortion);
+			setPitchEffect(tempPitch);
+			setFeedbackDelayEffect(tempFeedbackDelay);
+			setVibratoEffect(tempVibrato);
+			setChorusEffect(tempChorus);
+			setLowPassFilterEffect(tempLowPassFilter);
+			setReverbEffect(tempReverb);
+			setPhaserEffect(tempPhaser);
+		});
 
 		Tone.Destination.chain(tempDistortion, tempPitch, tempFeedbackDelay, tempVibrato, tempChorus, tempLowPassFilter, tempReverb, tempPhaser);
 	};
@@ -289,18 +293,20 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		try {
 			console.log('Starting updateSelectedAudio');
 
-			// 1. Clear ALL old events FIRST
-			if (timestampEventRef.current !== null) {
-				Tone.getTransport().clear(timestampEventRef.current);
-				console.log('Cleared old timestamp event:', timestampEventRef.current);
-				timestampEventRef.current = null;
-			}
+			React.startTransition(() => {
+				// 1. Clear ALL old events FIRST
+				if (timestampEventRef.current !== null) {
+					Tone.getTransport().clear(timestampEventRef.current);
+					console.log('Cleared old timestamp event:', timestampEventRef.current);
+					timestampEventRef.current = null;
+				}
 
-			if (endEventRef.current !== null) {
-				Tone.getTransport().clear(endEventRef.current);
-				console.log('Cleared old end event:', endEventRef.current);
-				endEventRef.current = null;
-			}
+				if (endEventRef.current !== null) {
+					Tone.getTransport().clear(endEventRef.current);
+					console.log('Cleared old end event:', endEventRef.current);
+					endEventRef.current = null;
+				}
+			});
 
 			// 2. Ensure audio context is started
 			await Tone.start();
@@ -405,17 +411,22 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 							audio.Duration = duration / tempoValue;
 
-							// Update state first
-							setSelectedAudio(audio);
-							setPlayerTimestamp(0);
+							React.startTransition(() => {
+								// Update state first
+								setSelectedAudio(audio);
+								setPlayerTimestamp(0);
+							});
 
 							// Reset transport BEFORE scheduling events
 							Tone.getTransport().seconds = 0;
 
-							// Schedule timestamp updates
+							// Schedule timestamp updates with deferred state updates
 							const newTimestampEventId = Tone.getTransport().scheduleRepeat(
 								() => {
-									setPlayerTimestamp(Tone.Transport.seconds);
+									// Defer state update to next frame to avoid render-phase updates
+									requestAnimationFrame(() => {
+										setPlayerTimestamp(Tone.Transport.seconds);
+									});
 								},
 								1,
 								0,
@@ -461,16 +472,21 @@ export const AppContextProvider = (props: IAppContextProps) => {
 
 							audio.Duration = (playerRef.current.buffer.duration as number) / tempoValue;
 
-							setSelectedAudio(audio);
-							setPlayerTimestamp(0);
+							React.startTransition(() => {
+								setSelectedAudio(audio);
+								setPlayerTimestamp(0);
+							});
 
 							// Reset transport
 							Tone.getTransport().seconds = 0;
 
-							// Schedule timestamp updates
+							// Schedule timestamp updates with deferred state updates
 							const newTimestampEventId = Tone.getTransport().scheduleRepeat(
 								() => {
-									setPlayerTimestamp(Tone.Transport.seconds);
+									// Defer state update to next frame to avoid render-phase updates
+									requestAnimationFrame(() => {
+										setPlayerTimestamp(Tone.Transport.seconds);
+									});
 								},
 								1,
 								0,
@@ -503,8 +519,10 @@ export const AppContextProvider = (props: IAppContextProps) => {
 				}).toDestination();
 			}
 
-			setTempoLevel(tempoValue);
-			setVisualTempoLevel(tempoValue);
+			React.startTransition(() => {
+				setTempoLevel(tempoValue);
+				setVisualTempoLevel(tempoValue);
+			});
 
 			const recorder = new Tone.Recorder();
 			recorderRef.current = recorder;
@@ -518,6 +536,318 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			console.error('Error in updateSelectedAudio:', error);
 		}
 	};
+
+	/*const updateSelectedAudio = async (audio: IAudio, randomizeEffects: boolean): Promise<void> => {
+		try {
+			console.log('Starting updateSelectedAudio');
+
+			// 1. CRITICAL: Ensure AudioContext is started FIRST and wait for it
+			await Tone.start();
+
+			// Double-check and wait for context to be running
+			if (Tone.context.state !== 'running') {
+				console.warn('AudioContext not running, attempting to resume...');
+				await Tone.context.resume();
+			}
+
+			// Wait a tick to ensure context is fully ready
+			await new Promise(resolve => setTimeout(resolve, 10));
+			console.log('AudioContext state:', Tone.context.state);
+
+			// Wrap all state updates in startTransition to mark them as non-urgent
+			React.startTransition(() => {
+				// 2. Clear ALL old events FIRST
+				if (timestampEventRef.current !== null) {
+					Tone.getTransport().clear(timestampEventRef.current);
+					console.log('Cleared old timestamp event:', timestampEventRef.current);
+					timestampEventRef.current = null;
+				}
+
+				if (endEventRef.current !== null) {
+					Tone.getTransport().clear(endEventRef.current);
+					console.log('Cleared old end event:', endEventRef.current);
+					endEventRef.current = null;
+				}
+			});
+
+			// 3. Stop and dispose current playback COMPLETELY
+			if (playerRef.current) {
+				try {
+					// Stop all players first
+					if (selectedAudio?.Stems?.length > 0) {
+						selectedAudio.Stems.forEach((stem) => {
+							try {
+								playerRef.current.player(stem.Name).stop();
+							} catch (e) {
+								console.warn('Error stopping stem:', e);
+							}
+						});
+					} else {
+						playerRef.current.stop();
+					}
+				} catch (e) {
+					console.warn('Error stopping player:', e);
+				}
+			}
+
+			// Stop transport
+			Tone.getTransport().stop();
+			Tone.getTransport().cancel();
+
+			// Remove old end listener
+			Tone.getTransport().off('stop');
+
+			// 4. Clean up old resources
+			if (selectedAudio?.CurrentTimestampEventId) {
+				Tone.getTransport().clear(selectedAudio.CurrentTimestampEventId);
+			}
+
+			if (selectedAudio?.Stems?.length > 0) {
+				selectedAudio.Stems.forEach((stem) => {
+					try {
+						playerRef.current?.player(stem.Name)?.unsync();
+						playerRef.current?.player(stem.Name)?.disconnect();
+						playerRef.current?.player(stem.Name)?.dispose();
+					} catch (e) {
+						console.error('Error disposing stem:', e);
+					}
+				});
+			} else if (playerRef.current) {
+				try {
+					playerRef.current.unsync();
+					playerRef.current.disconnect();
+					playerRef.current.dispose();
+				} catch (e) {
+					console.error('Error disposing player:', e);
+				}
+			}
+
+			// 5. CRITICAL: Wait for disposal to complete before creating new players
+			await new Promise(resolve => setTimeout(resolve, 100));
+			console.log('Players disposed');
+
+			// 6. Dispose effects
+			[distortionEffect, chorusEffect, feedbackDelayEffect, vibratoEffect,
+				pitchEffect, lowPassFilterEffect, reverbEffect, phaserEffect].forEach(effect => {
+					try {
+						effect?.disconnect();
+						effect?.dispose();
+					} catch (e) {
+						console.error('Error disposing effect:', e);
+					}
+				});
+
+			if (recorderRef.current) {
+				try {
+					recorderRef.current.disconnect();
+					recorderRef.current.dispose();
+				} catch (e) {
+					console.error('Error disposing recorder:', e);
+				}
+			}
+
+			// Small delay after effects disposal
+			await new Promise(resolve => setTimeout(resolve, 50));
+
+			const tempoValue = randomizeEffects ? Math.random() * (1.4 - 0.6 + 1) + 0.6 : 1;
+
+			if (audio.Stems?.length > 0) {
+				console.log('Loading stems:', audio.Stems.length);
+
+				const initialURLs = audio.Stems.reduce((acc, stem) => {
+					acc[stem.Name] = stem.Path;
+					return acc;
+				}, {});
+
+				let duration = 0;
+
+				playerRef.current = new Tone.Players({
+					urls: initialURLs,
+					onload: async () => {
+						console.log('Stems loaded');
+						try {
+							// Ensure context is still running before setup
+							if (Tone.context.state !== 'running') {
+								await Tone.context.resume();
+							}
+
+							// Set up channels
+							audio.Stems.forEach((stem) => {
+								const stemLength = playerRef.current.player(stem.Name).buffer.duration;
+								if (stemLength > duration) {
+									duration = stemLength;
+								}
+
+								const tempChannel = new Tone.Channel().toDestination();
+								stem.Channel = tempChannel;
+
+								const player = playerRef.current.player(stem.Name);
+								player.connect(tempChannel);
+								player.reverse = audio.Reversed;
+								player.playbackRate = tempoValue;
+								player.volume.value = 0;
+								player.sync();
+
+								// Log player state for debugging
+								console.log(`${stem.Name} setup:`, {
+									loaded: player.loaded,
+									state: player.state
+								});
+							});
+
+							audio.Duration = duration / tempoValue;
+
+							// Batch state updates
+							React.startTransition(() => {
+								setSelectedAudio(audio);
+								setPlayerTimestamp(0);
+							});
+
+							// Reset transport
+							Tone.getTransport().seconds = 0;
+
+							// Small delay before scheduling events
+							await new Promise(resolve => setTimeout(resolve, 10));
+
+							// Schedule timestamp updates with deferred state updates
+							const newTimestampEventId = Tone.getTransport().scheduleRepeat(
+								() => {
+									requestAnimationFrame(() => {
+										setPlayerTimestamp(Tone.Transport.seconds);
+									});
+								},
+								1,
+								0,
+								audio.Duration
+							);
+
+							timestampEventRef.current = newTimestampEventId;
+							console.log('Timestamp event scheduled:', newTimestampEventId);
+
+							// Wait before starting to ensure everything is connected
+							await new Promise(resolve => setTimeout(resolve, 10));
+
+							// Start all stems
+							audio.Stems.forEach((stem) => {
+								playerRef.current.player(stem.Name).start(0);
+							});
+
+							// Start transport
+							Tone.getTransport().start();
+							console.log('Transport started, state:', Tone.getTransport().state);
+
+							// Schedule end event
+							const newEndEventId = Tone.getTransport().scheduleOnce(() => {
+								console.log('Song ended');
+								React.startTransition(() => {
+									setPlayerTimestamp(0);
+								});
+								Tone.getTransport().stop();
+								Tone.getTransport().seconds = 0;
+								endEventRef.current = null;
+							}, `+${audio.Duration}`);
+
+							endEventRef.current = newEndEventId;
+							console.log('End event scheduled:', newEndEventId);
+
+						} catch (error) {
+							console.error('Error in onload callback:', error);
+						}
+					}
+				}).toDestination();
+
+			} else {
+				console.log('Loading single audio file:', audio.Path);
+
+				playerRef.current = new Tone.Player({
+					url: audio.Path,
+					onload: async () => {
+						console.log('Single audio loaded');
+						try {
+							// Ensure context is running
+							if (Tone.context.state !== 'running') {
+								await Tone.context.resume();
+							}
+
+							playerRef.current.reverse = audio.Reversed;
+							playerRef.current.playbackRate = tempoValue;
+							playerRef.current.volume.value = 0;
+							playerRef.current.sync();
+
+							audio.Duration = (playerRef.current.buffer.duration as number) / tempoValue;
+
+							React.startTransition(() => {
+								setSelectedAudio(audio);
+								setPlayerTimestamp(0);
+							});
+
+							// Reset transport
+							Tone.getTransport().seconds = 0;
+
+							// Small delay
+							await new Promise(resolve => setTimeout(resolve, 10));
+
+							// Schedule timestamp updates
+							const newTimestampEventId = Tone.getTransport().scheduleRepeat(
+								() => {
+									requestAnimationFrame(() => {
+										setPlayerTimestamp(Tone.Transport.seconds);
+									});
+								},
+								1,
+								0,
+								audio.Duration
+							);
+
+							timestampEventRef.current = newTimestampEventId;
+							console.log('Timestamp event scheduled:', newTimestampEventId);
+
+							// Wait before starting
+							await new Promise(resolve => setTimeout(resolve, 10));
+
+							// Start playback
+							playerRef.current.start(0);
+							Tone.getTransport().start();
+							console.log('Single player started, transport state:', Tone.getTransport().state);
+
+							// Schedule end event
+							const newEndEventId = Tone.getTransport().scheduleOnce(() => {
+								console.log('Song ended');
+								React.startTransition(() => {
+									setPlayerTimestamp(0);
+								});
+								Tone.getTransport().stop();
+								Tone.getTransport().seconds = 0;
+								endEventRef.current = null;
+							}, `+${audio.Duration}`);
+
+							endEventRef.current = newEndEventId;
+							console.log('End event scheduled:', newEndEventId);
+
+						} catch (error) {
+							console.error('Error in single audio onload:', error);
+						}
+					}
+				}).toDestination();
+			}
+
+			React.startTransition(() => {
+				setTempoLevel(tempoValue);
+				setVisualTempoLevel(tempoValue);
+			});
+
+			const recorder = new Tone.Recorder();
+			recorderRef.current = recorder;
+			Tone.getDestination().connect(recorder);
+
+			setEffectsChain(randomizeEffects);
+
+			console.log('updateSelectedAudio complete');
+
+		} catch (error) {
+			console.error('Error in updateSelectedAudio:', error);
+		}
+	};*/
 
 	const resetToDefaults = (): void => {
 		distortionEffect?.set({ distortion: 0 });
@@ -635,6 +965,8 @@ export const AppContextProvider = (props: IAppContextProps) => {
 		if (event.type === "mousedown" && isIOS) {
 			return;
 		}
+
+		// Update playback rate for all players
 		if (selectedAudio.Stems.length > 0) {
 			selectedAudio.Stems.forEach((stem) => {
 				playerRef.current.player(stem.Name).playbackRate = value;
@@ -643,7 +975,40 @@ export const AppContextProvider = (props: IAppContextProps) => {
 			playerRef.current.playbackRate = value;
 		}
 
+		// Recalculate duration based on new tempo
+		let originalDuration = selectedAudio.Duration * tempoLevel; // Get original duration
+		let newDuration = originalDuration / value; // Calculate new duration
+
+		// Update the audio object with new duration
+		const updatedAudio = { ...selectedAudio };
+		updatedAudio.Duration = newDuration;
+		setSelectedAudio(updatedAudio);
+
+		// Clear and reschedule the end event with new duration
+		if (endEventRef.current !== null) {
+			Tone.getTransport().clear(endEventRef.current);
+			endEventRef.current = null;
+		}
+
+		const currentTime = Tone.Transport.seconds;
+		const remainingTime = newDuration - currentTime;
+
+		// Only schedule new end event if there's time remaining
+		if (remainingTime > 0 && Tone.getTransport().state === 'started') {
+			const newEndEventId = Tone.getTransport().scheduleOnce(() => {
+				console.log('Song ended');
+				setPlayerTimestamp(0);
+				Tone.getTransport().stop();
+				Tone.getTransport().seconds = 0;
+				endEventRef.current = null;
+			}, `+${remainingTime}`);
+
+			endEventRef.current = newEndEventId;
+			console.log('End event rescheduled with new duration:', newDuration, 'remaining:', remainingTime);
+		}
+
 		setVisualTempoLevel(value);
+		setTempoLevel(value); // Update the tempo level state
 	};
 
 	const handleFeedbackDelayLevel = (event: Event, value: number): void => {

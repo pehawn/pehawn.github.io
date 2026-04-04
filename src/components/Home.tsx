@@ -386,7 +386,7 @@ const HawnestAudioPlayer = () => {
                       </a>
                       <a href="https://music.apple.com/us/artist/hawnest/1842981468" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity">Apple Music →</a>
                       <a href="https://www.instagram.com/hawnest_" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity">Instagram →</a>
-                      {/* <a href="#" className="hover:opacity-50 transition-opacity">Bandcamp →</a> */}
+                      <a href="https://hawnest.bandcamp.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-50 transition-opacity">Bandcamp →</a>
                     </div>
                   </div>
                 </div>
@@ -561,7 +561,7 @@ const HawnestAudioPlayer = () => {
               {/* Album Info */}
               <div className="pt-0 sm:pt-4">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4 tracking-tight">{selectedAlbum?.Name}</h1>
-                <p className="text-xs sm:text-sm tracking-wider opacity-60">{selectedAlbum?.Type} · {selectedAlbum?.ReleaseDate?.getFullYear()} · {selectedAlbum?.Songs.length} TRACKS</p>
+                <p className="text-xs sm:text-sm tracking-wider opacity-60">{selectedAlbum?.Type} · {selectedAlbum?.ReleaseDate.toISOString().slice(0, 10)}</p>
               </div>
             </div>
           )}
@@ -842,8 +842,7 @@ const HawnestAudioPlayer = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 sm:py-6 px-2 sm:px-6 cursor-pointer gap-3 sm:gap-0">
                   {/* Left: Date & Title */}
                   <div className="flex items-center gap-3 sm:gap-8 flex-1 min-w-0">
-                    <div className="hidden sm:block text-xs tracking-wider opacity-40 w-20 flex-shrink-0">{selectedAlbum?.ReleaseDate.toISOString().slice(0, 10)}</div>
-                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="flex items-center gap-3 sm:gap-7 flex-1 min-w-0">
                       <button
                         disabled={isLoadingSong}
                         onClick={() => {
